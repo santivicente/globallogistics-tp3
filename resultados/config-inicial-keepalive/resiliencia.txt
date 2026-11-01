@@ -1,0 +1,42 @@
+### PRUEBA 1: docker stop de una réplica en plena carga (t=10s) y vuelta (t=20s)
+[t=10] docker stop tp3-api-2
+tp3-api-2
+[t=20] docker start tp3-api-2
+tp3-api-2
+Complete requests:      46599
+Failed requests:        0
+Requests per second:    1553.28 [#/sec] (mean)
+Connect:        0    0   0.1      0       4
+  95%     76
+  99%    113
+ 100%   1504 (longest request)
+--- log nginx:
+2026/11/01 16:35:09 [error] 30#30: *220635 recv() failed (104: Connection reset by peer) while reading response header from upstream
+2026/11/01 16:35:09 [warn] 30#30: *220635 upstream server temporarily disabled while reading response header from upstream
+2026/11/01 16:35:09 [error] 30#30: *220647 upstream prematurely closed connection while reading response header from upstream
+2026/11/01 16:35:09 [warn] 30#30: *220647 upstream server temporarily disabled while reading response header from upstream
+2026/11/01 16:35:09 [error] 30#30: *220641 recv() failed (104: Connection reset by peer) while reading response header from upstream
+2026/11/01 16:35:09 [warn] 30#30: *220641 upstream server temporarily disabled while reading response header from upstream
+
+reparto tras la vuelta:
+      1 50def5db5e5426dcad9aa8bb2f5021f9e2e250def5db5e5426dcad9aa8bb2f5021f9e2e250def5db5e5426dcad9aa8bb2f5021f9e2e2
+
+### PRUEBA 2: el proceso de una réplica muere solo (autorreinicio)
+antes: /tp3-api-3 restarts=0 running
+a 1s: running exit=0
+a 13s: /tp3-api-3 restarts=1 running healthy
+
+### PRUEBA 3: escalar a 5 sin tocar NGINX
+nginx iniciado: 2026-11-01T16:33:00.517949392Z
+ Container tp3-api-3 Healthy 
+ Container tp3-api-1 Healthy 
+ Container tp3-api-2 Healthy 
+      1 50def5db5e5426dcad9aa8bb2f5021f9e2e2c01edc033270c49014b480f850def5db5e5426dcad9aa8bb2f5021f9e2e2c01edc033270c49014b480f850def5db5e5426dcad9aa8bb2f5021f9e2e2c01edc033270c49014b480f8
+nginx iniciado: 2026-11-01T16:33:00.517949392Z
+ Container tp3-api-2 Healthy 
+de vuelta a 3:
+200 200 200 200 200 200 200 200 200 
+tp3-api-1 Up 3 minutes (healthy)
+tp3-api-2 Up 55 seconds (healthy)
+tp3-api-3 Up 43 seconds (healthy)
+tp3-balanceador-1 Up 3 minutes (healthy)

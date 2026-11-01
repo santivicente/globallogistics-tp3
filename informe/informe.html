@@ -1,0 +1,343 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>TP3 - Arquitectura de Sistemas</title><style>
+*{box-sizing:border-box}
+body{font:10.5pt/1.48 "Segoe UI",Calibri,Arial,sans-serif;color:#1a1a1a;margin:0;background:#fff}
+h1{font-size:21pt;line-height:1.2;margin:0 0 3pt}
+h2{font-size:14pt;margin:20pt 0 6pt;break-after:avoid}
+h3{font-size:11pt;margin:13pt 0 3pt;break-after:avoid}
+p{margin:0 0 7pt}
+ul{margin:0 0 7pt;padding-left:17pt} li{margin-bottom:3pt}
+a{color:#1a5fb4}
+code{font:9.2pt Consolas,monospace;background:#f2f1ee;padding:0 2.5pt;border-radius:2px}
+pre{font:8pt/1.32 Consolas,monospace;background:#f6f5f2;border:1px solid #e4e3df;border-radius:3px;padding:7pt 9pt;margin:0 0 9pt;white-space:pre-wrap;overflow-wrap:anywhere}
+.tapa{border-bottom:2px solid #1a1a1a;padding-bottom:9pt;margin-bottom:11pt}
+.tapa .sup{font-size:9.5pt;color:#52514e;margin-bottom:5pt}
+.tapa .sub{font-size:12pt;color:#52514e;margin-bottom:8pt}
+.meta{font-size:9.7pt} .meta div{margin-bottom:2pt}
+table{border-collapse:collapse;width:100%;margin:5pt 0 9pt;font-size:9.3pt;break-inside:avoid}
+th{font-weight:600;text-align:left;border-bottom:1px solid #1a1a1a;padding:3pt 5pt;vertical-align:bottom}
+td{border-bottom:1px solid #e4e3df;padding:2.6pt 5pt;vertical-align:top}
+.n{text-align:right;font-variant-numeric:tabular-nums}
+.res td{border-top:1px solid #1a1a1a;font-weight:600}
+.densa{font-size:8.6pt} .densa td,.densa th{padding:1.8pt 4pt}
+figure{margin:7pt 0 10pt;break-inside:avoid}
+figure img{width:100%;display:block;border:1px solid #e4e3df}
+figure svg{width:100%;display:block}
+figcaption{font-size:8.8pt;color:#52514e;margin-top:3pt}
+.nota{font-size:8.8pt;color:#52514e;margin-top:-5pt}
+.conc{border-left:3px solid #1a1a1a;padding:2pt 0 2pt 10pt;margin:8pt 0;break-inside:avoid}
+.tick{font-size:10.5px;fill:#52514e} .eje{font-size:10.5px;fill:#52514e} .ley{font-size:10.5px;fill:#1a1a1a} .val{font-size:10.5px;fill:#1a1a1a;font-weight:600} .ref{font-size:10px;fill:#52514e}
+.caja rect{fill:#f6f5f2;stroke:#b9b8b2} .dtxt text{font-size:12.5px;fill:#1a1a1a;font-weight:600} .dtxt .sub,.sub{font-size:10px;font-weight:400;fill:#52514e}
+.salto{break-before:page}
+</style></head><body>
+
+<header class="tapa">
+<div class="sup">Licenciatura en Sistemas de Información · Arquitectura de Sistemas · Ciclo 2026</div>
+<h1>Trabajo Práctico N° 3</h1>
+<div class="sub">Despliegue de Arquitectura Cloud-Native. Caso: GlobalLogistics S.A.</div>
+<div class="meta">
+<div><b>Repositorio:</b> <a href="https://github.com/santivicente/globallogistics-tp3">github.com/santivicente/globallogistics-tp3</a></div>
+<div><b>Integrantes:</b> Santiago Vicente, Josué Ferreyra, Candela Aguiar, Delfina Ibañez y Matias Porcari</div>
+<div><b>Fecha:</b> Noviembre de 2026</div>
+</div>
+</header>
+
+<h2 style="margin-top:0">Resumen</h2>
+<p>Desplegamos un balanceador NGINX y tres réplicas de un microservicio con un solo archivo de Docker Compose, y lo sometimos a pruebas de carga con Apache Benchmark. Como vara usamos los objetivos del contrato que definimos en el TP2: p95 ≤ 300 ms, p99 ≤ 800 ms y un máximo de 2000 ms.</p>
+<p>Con 100 clientes simultáneos el sistema cumple sin problemas (p95 de 79 ms, sin errores). La CPU de las réplicas se satura mucho antes, cerca de los 10 clientes, pero eso solo hace crecer la latencia de forma gradual. El objetivo de p95 se pierde entre 400 y 450 clientes y los errores empiezan cerca de 480, cuando se agota el pool de conexiones de NGINX. A los 1000 clientes falla el 97 % de las peticiones. La lección que más nos dejó el trabajo es que las caídas no vinieron de la CPU, sino de límites de conexiones y de la interacción entre configuraciones.</p>
+
+<h2>1. Configuración del entorno e IaC</h2>
+<figure><svg viewBox="0 0 680 150" role="img" aria-label="Clientes, balanceador NGINX y tres réplicas de la API">
+<defs><marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52514e"/></marker></defs>
+<g class="caja"><rect x="10" y="50" width="130" height="50" rx="5"/><rect x="255" y="50" width="150" height="50" rx="5"/>
+<rect x="520" y="5" width="150" height="40" rx="5"/><rect x="520" y="55" width="150" height="40" rx="5"/><rect x="520" y="105" width="150" height="40" rx="5"/></g>
+<g class="dtxt" text-anchor="middle"><text x="75" y="72">Cliente / ab</text><text x="75" y="88" class="sub">red de Compose o :80</text>
+<text x="330" y="72">NGINX 1.28</text><text x="330" y="88" class="sub">round-robin, 1 CPU</text>
+<text x="595" y="23">api-1</text><text x="595" y="37" class="sub">Node 22, 1 CPU, /health</text>
+<text x="595" y="73">api-2</text><text x="595" y="87" class="sub">Node 22, 1 CPU, /health</text>
+<text x="595" y="123">api-3</text><text x="595" y="137" class="sub">Node 22, 1 CPU, /health</text></g>
+<g stroke="#52514e" fill="none" marker-end="url(#f)"><path d="M140 75H253"/><path d="M405 70L518 27"/><path d="M405 75H518"/><path d="M405 80L518 123"/></g>
+<text x="462" y="20" text-anchor="middle" class="sub">DNS interno de Docker</text></svg><figcaption>Figura 1. Arquitectura desplegada.</figcaption></figure>
+<p>El archivo <code>docker-compose.yml</code> define todo el entorno y está completo en el Anexo. Un <code>docker-compose up -d</code> levanta exactamente un balanceador y tres réplicas: la cantidad sale de <code>deploy.replicas: 3</code>. Lo probamos borrando antes la imagen de la API, para confirmar que el entorno se construye solo y no requiere pasos previos.</p>
+<p>Las decisiones que tomamos en el manifiesto fueron estas:</p>
+<ul>
+<li><b>Límite de 1 CPU por contenedor.</b> Sin límites, las réplicas compiten por los mismos núcleos y no se puede comparar una réplica contra tres. Además, se parece más a cómo se contrata capacidad en la nube.</li>
+<li><b>Orden de arranque por salud.</b> NGINX espera con <code>depends_on: condition: service_healthy</code>, así no recibe tráfico hasta que las réplicas responden.</li>
+<li><b>Reinicio automático.</b> Con <code>restart: unless-stopped</code>, si el proceso de una réplica termina, Docker la vuelve a levantar.</li>
+<li><b>Generador de carga en un perfil aparte.</b> <code>ab</code> no arranca con <code>up -d</code>, así que el entorno tiene solo los cuatro contenedores que pide la consigna.</li>
+</ul>
+
+<h2>2. Microservicio y balanceo</h2>
+<p>La API está hecha en Node.js con Express sobre <code>node:22-alpine</code>. <code>GET /</code> devuelve el hostname del sistema, que en Docker es el ID corto del contenedor, y <code>GET /health</code> responde al health check.</p>
+<p>Agregamos algo que no estaba pedido: <code>GET /</code> ejecuta 3000 iteraciones de PBKDF2, alrededor de 1,6 ms de CPU. Un endpoint que solo devuelve un JSON casi no consume procesador y queríamos saturar la CPU de verdad, que es lo que pide el escenario extremo. Elegimos un cálculo y no una espera porque una espera no ocupa CPU. El valor se cambia con la variable <code>CPU_WORK_ITERATIONS</code>.</p>
+<p>La Figura 2 muestra la rotación: nueve peticiones seguidas al balanceador son respondidas por tres IDs distintos, siempre en el mismo orden.</p>
+<figure><img src="capturas/c1.png" alt="docker-compose ps y nueve peticiones respondidas por tres instancias"><figcaption>Figura 2. Un balanceador y tres réplicas sanas; las peticiones consecutivas rotan entre las instancias.</figcaption></figure>
+
+<h3>Health checks</h3>
+<p>Los resolvimos en dos niveles, porque el <code>health_check</code> activo de NGINX es exclusivo de la versión Plus y usamos la versión abierta:</p>
+<ul>
+<li><b>Pasivo, en NGINX:</b> <code>max_fails=3 fail_timeout=10s</code>. Tres fallos en 10 s sacan a una réplica de la rotación durante 10 s, y <code>proxy_next_upstream</code> reintenta la petición en otra.</li>
+<li><b>Activo, en Docker:</b> cada 5 s se consulta <code>/health</code> en cada réplica y <code>/nginx-health</code> en el balanceador.</li>
+</ul>
+<p>Hay un límite que conviene tener claro: en Compose, una réplica marcada <i>unhealthy</i> no sale sola de la rotación ni se reinicia. Esa decisión la toma solo el mecanismo pasivo, es decir, recién cuando ya fallaron peticiones reales. Como veremos, esto tuvo consecuencias.</p>
+
+<h3>Prueba de resiliencia</h3>
+<table><thead><tr><th style="width:38%">Prueba</th><th>Resultado</th></tr></thead><tbody>
+<tr><td>Detener una réplica durante 10 s con 50 clientes activos</td><td>41.910 peticiones, <b>0 fallidas</b>; p99 de 110 ms y máximo de 204 ms. Al volver, recibe otra vez su parte del tráfico.</td></tr>
+<tr><td>Terminar el proceso de una réplica</td><td>Docker la reinició sola; a los 13 s estaba otra vez sana.</td></tr>
+<tr><td>Escalar a 5 réplicas con <code>--scale api=5</code></td><td>NGINX las incorporó sin reiniciarse, gracias a <code>resolve</code> y al DNS interno de Docker.</td></tr>
+</tbody></table>
+<p>Dos aclaraciones. <code>docker stop</code> es una detención ordenada; no probamos un corte abrupto con peticiones en curso. Y NGINX reintenta solo métodos idempotentes como GET: un <code>POST /envios</code> no se reintentaría, y ahí es donde entra en juego la <code>Idempotency-Key</code> que definimos en el TP2.</p>
+<p>Respecto a escalar "sin intervención manual", el resultado es parcial. Las réplicas se recuperan solas, pero agregar capacidad sigue requiriendo un comando: Compose no tiene autoescalado. Para eso haría falta un orquestador, como Kubernetes con un HPA.</p>
+
+<h2>3. Pruebas de estrés</h2>
+<h3>Método</h3>
+<p>Cada medición dura 20 s y se repite 3 veces. Informamos el promedio de las tres, salvo la latencia máxima, donde dejamos el peor valor. Corrimos todo en una PC con un i7-9700 de 8 núcleos y 16 GB de RAM, con Docker Desktop sobre WSL2.</p>
+<p><code>ab</code> corre en un contenedor dentro de la red de Compose, para no medir también el reenvío de puertos de Windows. Como comparte la máquina con el sistema probado, controlamos que no fuera el cuello de botella: en el barrido y en las pruebas de escalabilidad, mientras no hubo errores, su CPU se mantuvo entre 6 % y 35 %. Los comandos exactos están en el README y los reportes crudos en <code>resultados/crudo/</code>.</p>
+<h3>Resultados de los dos escenarios</h3>
+<table>
+<thead><tr><th>Métrica</th><th class="n">Moderado<br>c = 100</th><th class="n">Extremo c = 1000<br>config. final</th><th class="n">Extremo c = 1000<br>pool ampliado</th><th class="n">Objetivo<br>(TP2)</th></tr></thead><tbody>
+<tr><td>Peticiones con error</td><td class="n">0 %</td><td class="n"><b>97 %</b></td><td class="n">0 %</td><td class="n">–</td></tr>
+<tr><td>Respuestas correctas por segundo</td><td class="n">1.798</td><td class="n"><b>321</b></td><td class="n">1.781</td><td class="n">–</td></tr>
+<tr><td>Latencia promedio</td><td class="n">56 ms</td><td class="n">*</td><td class="n">552 ms</td><td class="n">–</td></tr>
+<tr><td>Percentil 95</td><td class="n">79 ms</td><td class="n">*</td><td class="n"><b>614 ms</b></td><td class="n">≤ 300 ms</td></tr>
+<tr><td>Percentil 99</td><td class="n">90 ms</td><td class="n">*</td><td class="n">635 ms</td><td class="n">≤ 800 ms</td></tr>
+<tr><td>Latencia máxima</td><td class="n">134 ms</td><td class="n">*</td><td class="n">661 ms</td><td class="n">≤ 2000 ms</td></tr>
+<tr><td>CPU de cada réplica / de NGINX</td><td class="n">88 % / 29 %</td><td class="n">99 % / 49 %</td><td class="n">98 % / 33 %</td><td class="n">–</td></tr>
+<tr class="res"><td>Resultado frente al objetivo</td><td class="n">Cumple</td><td class="n"><b>No cumple</b></td><td class="n"><b>No cumple</b> (solo p95)</td><td></td></tr>
+</tbody></table>
+<p class="nota">* No se informa porque casi todas las muestras son errores instantáneos: el p50 de esa prueba da 57 ms y no significa que el sistema responda rápido.</p>
+<figure><img src="capturas/c2.png" alt="Reporte de ab con 100 clientes"><figcaption>Figura 3. Una corrida del escenario moderado. Sus valores difieren un poco del promedio de la tabla, como es esperable entre corridas.</figcaption></figure>
+<figure><img src="capturas/c3.png" alt="Reporte de ab con 1000 clientes y advertencias de NGINX"><figcaption>Figura 4. Escenario extremo con la configuración final. Las 11.600 "req/s" son en su gran mayoría fallos; el log de NGINX muestra el motivo.</figcaption></figure>
+<p>Leer estos reportes tiene su trampa. <code>ab</code> cuenta los errores como peticiones completas, así que mientras el sistema se cae, las req/s <i>suben</i>. Además, su "Time per request" no se mide: es la concurrencia dividida por el throughput. Por eso reportamos las respuestas 2xx por segundo y la media de <i>Connection Times</i>.</p>
+
+<h3>Barrido de concurrencia</h3>
+<p>Dos escenarios no alcanzan para ubicar dónde se degrada el sistema, así que medimos también los puntos intermedios.</p>
+<table class="densa"><thead><tr><th>Pool</th><th class="n">Clientes</th><th class="n">2xx/s</th><th class="n">Errores</th><th class="n">Media</th><th class="n">p95</th><th class="n">p99</th><th class="n">Máx.</th><th class="n">CPU réplica</th><th class="n">CPU NGINX</th><th>Objetivo</th></tr></thead><tbody>
+<tr><td>1024</td><td class="n">1</td><td class="n">530</td><td class="n">0 %</td><td class="n">2</td><td class="n">2</td><td class="n">3</td><td class="n">31</td><td class="n">31</td><td class="n">14</td><td>Cumple</td></tr><tr><td></td><td class="n">10</td><td class="n">1.759</td><td class="n">0 %</td><td class="n">6</td><td class="n">11</td><td class="n">14</td><td class="n">37</td><td class="n">97</td><td class="n">34</td><td>Cumple</td></tr><tr><td></td><td class="n">50</td><td class="n">1.796</td><td class="n">0 %</td><td class="n">28</td><td class="n">36</td><td class="n">44</td><td class="n">72</td><td class="n">99</td><td class="n">32</td><td>Cumple</td></tr><tr><td></td><td class="n">100</td><td class="n">1.798</td><td class="n">0 %</td><td class="n">56</td><td class="n">79</td><td class="n">90</td><td class="n">134</td><td class="n">88</td><td class="n">29</td><td>Cumple</td></tr><tr><td></td><td class="n">200</td><td class="n">1.667</td><td class="n">0 %</td><td class="n">120</td><td class="n">175</td><td class="n">207</td><td class="n">340</td><td class="n">99</td><td class="n">33</td><td>Cumple</td></tr><tr><td></td><td class="n">300</td><td class="n">1.767</td><td class="n">0 %</td><td class="n">169</td><td class="n">208</td><td class="n">225</td><td class="n">255</td><td class="n">99</td><td class="n">33</td><td>Cumple</td></tr><tr><td></td><td class="n">400</td><td class="n">1.729</td><td class="n">0 %</td><td class="n">230</td><td class="n">283</td><td class="n">332</td><td class="n">454</td><td class="n">98</td><td class="n">33</td><td>Cumple</td></tr><tr><td></td><td class="n">450</td><td class="n">1.742</td><td class="n">0 %</td><td class="n">257</td><td class="n">319</td><td class="n">360</td><td class="n">503</td><td class="n">99</td><td class="n">32</td><td>p95 excedido</td></tr><tr><td></td><td class="n">480</td><td class="n">1.699</td><td class="n">11 %</td><td class="n">250</td><td class="n">325</td><td class="n">346</td><td class="n">380</td><td class="n">99</td><td class="n">35</td><td>Con errores</td></tr><tr><td></td><td class="n">500</td><td class="n">441</td><td class="n">96 %</td><td class="n">*</td><td class="n">*</td><td class="n">*</td><td class="n">*</td><td class="n">100</td><td class="n">57</td><td>Con errores</td></tr><tr><td></td><td class="n">1.000</td><td class="n">321</td><td class="n">97 %</td><td class="n">*</td><td class="n">*</td><td class="n">*</td><td class="n">*</td><td class="n">99</td><td class="n">49</td><td>Con errores</td></tr><tr><td></td><td class="n">2.000</td><td class="n">38</td><td class="n">100 %</td><td class="n">*</td><td class="n">*</td><td class="n">*</td><td class="n">*</td><td class="n">1</td><td class="n">29</td><td>Con errores</td></tr>
+<tr><td>8192</td><td class="n">500</td><td class="n">1.736</td><td class="n">0 %</td><td class="n">286</td><td class="n">335</td><td class="n">383</td><td class="n">513</td><td class="n">98</td><td class="n">32</td><td>p95 excedido</td></tr><tr><td></td><td class="n">1.000</td><td class="n">1.781</td><td class="n">0 %</td><td class="n">552</td><td class="n">614</td><td class="n">635</td><td class="n">661</td><td class="n">98</td><td class="n">33</td><td>p95 excedido</td></tr><tr><td></td><td class="n">1.500</td><td class="n">413</td><td class="n">95 %</td><td class="n">*</td><td class="n">*</td><td class="n">*</td><td class="n">*</td><td class="n">3</td><td class="n">75</td><td>Con errores</td></tr><tr><td></td><td class="n">2.000</td><td class="n">345</td><td class="n">97 %</td><td class="n">*</td><td class="n">*</td><td class="n">*</td><td class="n">*</td><td class="n">1</td><td class="n">77</td><td>Con errores</td></tr>
+</tbody></table>
+<p class="nota">Latencias en ms y CPU en % de un núcleo. * No representativo: más de la mitad de las respuestas son errores.</p>
+<figure><svg viewBox="0 0 680 270" role="img" aria-label="Latencia p95 y p99 según la cantidad de clientes"><line x1="56" x2="618" y1="228" y2="228" stroke="#e4e3df"/><text x="48" y="232" text-anchor="end" class="tick">0</text><line x1="56" x2="618" y1="161.33333333333334" y2="161.33333333333334" stroke="#e4e3df"/><text x="48" y="165.33333333333334" text-anchor="end" class="tick">300</text><line x1="56" x2="618" y1="94.66666666666669" y2="94.66666666666669" stroke="#e4e3df"/><text x="48" y="98.66666666666669" text-anchor="end" class="tick">600</text><line x1="56" x2="618" y1="28" y2="28" stroke="#e4e3df"/><text x="48" y="32" text-anchor="end" class="tick">900</text><text x="56" y="245" text-anchor="middle" class="tick">0</text><text x="168.4" y="245" text-anchor="middle" class="tick">200</text><text x="280.8" y="245" text-anchor="middle" class="tick">400</text><text x="393.2" y="245" text-anchor="middle" class="tick">600</text><text x="505.6" y="245" text-anchor="middle" class="tick">800</text><text x="618" y="245" text-anchor="middle" class="tick">1.000</text><line x1="56" x2="618" y1="228" y2="228" stroke="#b9b8b2"/><text x="337" y="266" text-anchor="middle" class="eje">Clientes simultáneos</text><text x="12" y="12" class="eje">Latencia (ms)</text><line x1="56" x2="618" y1="50.22222222222223" y2="50.22222222222223" stroke="#52514e"/><text x="62" y="45.22222222222223" class="ref">Objetivo p99: 800 ms</text><line x1="56" x2="618" y1="161.33333333333334" y2="161.33333333333334" stroke="#52514e"/><text x="62" y="156.33333333333334" class="ref">Objetivo p95: 300 ms</text><path d="M61.6 225.5 L84.1 220.1 L112.2 210.4 L168.4 189.0 L224.6 181.7 L280.8 165.1 L308.9 157.2 L337.0 153.6 L618.0 91.5" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="61.6" cy="225.5" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="84.1" cy="220.1" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="112.2" cy="210.4" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="168.4" cy="189.0" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="224.6" cy="181.7" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="280.8" cy="165.1" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="308.9" cy="157.2" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="337.0" cy="153.6" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="618.0" cy="91.5" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><path d="M61.6 224.9 L84.1 218.3 L112.2 207.9 L168.4 181.9 L224.6 177.9 L280.8 154.1 L308.9 148.0 L337.0 142.8 L618.0 86.8" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="61.6" cy="224.9" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="84.1" cy="218.3" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="112.2" cy="207.9" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="168.4" cy="181.9" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="224.6" cy="177.9" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="280.8" cy="154.1" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="308.9" cy="148.0" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="337.0" cy="142.8" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="618.0" cy="86.8" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><text x="626" y="104.55555555555557" class="val">p95 614</text><text x="626" y="81.88888888888889" class="val">p99 635</text><line x1="488" x2="508" y1="10" y2="10" stroke="#2a78d6" stroke-width="2"/><circle cx="498" cy="10" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><text x="514" y="14" class="ley">p95</text><line x1="540.6" x2="560.6" y1="10" y2="10" stroke="#eb6834" stroke-width="2"/><circle cx="550.6" cy="10" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><text x="566.6" y="14" class="ley">p99</text></svg><figcaption>Figura 5. Latencia en las pruebas sin errores significativos: pool 1024 hasta 450 clientes y pool ampliado en 500 y 1000.</figcaption></figure>
+<figure><svg viewBox="0 0 680 280" role="img" aria-label="Respuestas correctas por segundo según la cantidad de clientes"><line x1="56" x2="656" y1="238" y2="238" stroke="#e4e3df"/><text x="48" y="242" text-anchor="end" class="tick">0</text><line x1="56" x2="656" y1="185.5" y2="185.5" stroke="#e4e3df"/><text x="48" y="189.5" text-anchor="end" class="tick">500</text><line x1="56" x2="656" y1="133" y2="133" stroke="#e4e3df"/><text x="48" y="137" text-anchor="end" class="tick">1.000</text><line x1="56" x2="656" y1="80.5" y2="80.5" stroke="#e4e3df"/><text x="48" y="84.5" text-anchor="end" class="tick">1.500</text><line x1="56" x2="656" y1="28" y2="28" stroke="#e4e3df"/><text x="48" y="32" text-anchor="end" class="tick">2.000</text><text x="56" y="255" text-anchor="middle" class="tick">1</text><text x="214.8078296068942" y="255" text-anchor="middle" class="tick">10</text><text x="373.6156592137884" y="255" text-anchor="middle" class="tick">100</text><text x="532.4234888206827" y="255" text-anchor="middle" class="tick">1.000</text><text x="656" y="255" text-anchor="middle" class="tick">6.000</text><line x1="56" x2="656" y1="238" y2="238" stroke="#b9b8b2"/><text x="356" y="276" text-anchor="middle" class="eje">Clientes simultáneos (escala logarítmica)</text><text x="12" y="12" class="eje">Respuestas 2xx por segundo</text><path d="M56.0 182.4 L214.8 53.3 L325.8 49.5 L373.6 49.3 L421.4 62.9 L449.4 52.4 L469.2 56.5 L477.4 55.1 L481.8 59.6 L484.6 191.7 L497.2 203.3 L517.0 192.2 L532.4 204.3 L580.2 234.0" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="56.0" cy="182.4" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="214.8" cy="53.3" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="325.8" cy="49.5" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="373.6" cy="49.3" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="421.4" cy="62.9" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="449.4" cy="52.4" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="469.2" cy="56.5" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="477.4" cy="55.1" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="481.8" cy="59.6" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="484.6" cy="191.7" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="497.2" cy="203.3" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="517.0" cy="192.2" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="532.4" cy="204.3" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><circle cx="580.2" cy="234.0" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><path d="M484.6 55.7 L532.4 51.0 L560.4 194.7 L580.2 201.7 L608.2 198.7 L628.0 207.5 L656.0 223.9" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="484.6" cy="55.7" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="532.4" cy="51.0" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="560.4" cy="194.7" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="580.2" cy="201.7" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="608.2" cy="198.7" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="628.0" cy="207.5" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><circle cx="656.0" cy="223.9" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><path d="M373.6 54.9 L401.6 149.7 L421.4 182.8" fill="none" stroke="#1baf7a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="373.6" cy="54.9" r="4" fill="#1baf7a" stroke="#fff" stroke-width="2"/><circle cx="401.6" cy="149.7" r="4" fill="#1baf7a" stroke="#fff" stroke-width="2"/><circle cx="421.4" cy="182.8" r="4" fill="#1baf7a" stroke="#fff" stroke-width="2"/><line x1="166" x2="186" y1="10" y2="10" stroke="#2a78d6" stroke-width="2"/><circle cx="176" cy="10" r="4" fill="#2a78d6" stroke="#fff" stroke-width="2"/><text x="192" y="14" class="ley">Configuración final (pool 1024)</text><line x1="392.20000000000005" x2="412.20000000000005" y1="10" y2="10" stroke="#eb6834" stroke-width="2"/><circle cx="402.20000000000005" cy="10" r="4" fill="#eb6834" stroke="#fff" stroke-width="2"/><text x="418.20000000000005" y="14" class="ley">Pool ampliado (8192)</text><line x1="550.2" x2="570.2" y1="10" y2="10" stroke="#1baf7a" stroke-width="2"/><circle cx="560.2" cy="10" r="4" fill="#1baf7a" stroke="#fff" stroke-width="2"/><text x="576.2" y="14" class="ley">Con keepalive</text></svg><figcaption>Figura 6. Respuestas correctas por segundo. El caudal se sostiene hasta que un límite de conexiones provoca una caída brusca.</figcaption></figure>
+
+<h2>4. Análisis crítico</h2>
+<h3>¿En qué punto se degrada y qué se rompe primero?</h3>
+<p>Encontramos cuatro puntos de quiebre, cada uno de distinta naturaleza:</p>
+<table><thead><tr><th class="n" style="width:13%">Clientes</th><th style="width:29%">Qué pasa</th><th>Evidencia</th></tr></thead><tbody>
+<tr><td class="n">≈ 10</td><td>Se saturan las CPU de las réplicas</td><td>97 % de CPU y 1.759 req/s. La latencia sube de 1,9 a 5,7 ms. Sin errores.</td></tr>
+<tr><td class="n">400–450</td><td>Se pierde el objetivo de p95</td><td>p95 de 283 ms con 400 clientes y de 319 ms con 450. Sin errores.</td></tr>
+<tr><td class="n">450–480</td><td>Se agota el pool de NGINX</td><td>11 % de errores con 480 y 96 % con 500. Log: <code>1024 worker_connections are not enough</code>.</td></tr>
+<tr><td class="n">1000–1500</td><td>Con pool ampliado, se llena el backlog de las réplicas</td><td><code>ListenOverflows</code> pasa de 0 a 250 entre 1000 y 1500 clientes, y aparecen timeouts de conexión.</td></tr>
+</tbody></table>
+<p>Respondiendo a la pregunta de la consigna: <b>lo primero en saturarse fue la CPU de los nodos, pero lo primero en romperse fue NGINX</b>, al quedarse sin conexiones. Son dos cosas distintas. Cuando se satura la CPU, el sistema no falla: las peticiones hacen cola. Por eso, una vez saturado, el caudal se queda en unas 1750 req/s y la latencia crece en proporción a los clientes, como predice la Ley de Little (R = N / X). Con 400 clientes predice 231 ms y medimos 230 ms; con 1000 clientes, 561 ms contra 552 ms.</p>
+<p>El pool, en cambio, falla de golpe. Cada petición ocupa dos conexiones, una con el cliente y otra con la réplica, de modo que las 1024 alcanzan para unos 512 clientes como máximo, y los errores empiezan algo antes. Agotado el pool, NGINX corta conexiones y queda en un estado de muy bajo rendimiento: con 2000 clientes salen apenas 38 respuestas correctas por segundo y las réplicas están prácticamente ociosas, con 1 % de CPU. Ampliar el pool a 8192 eliminó los errores a 1000 clientes, lo que confirma la causa.</p>
+<p>Pasar de 1000 a 1500 clientes con el pool ampliado expuso el siguiente límite: 1500 clientes son unas 500 conexiones por réplica, cerca del backlog de 511 que Node usa por defecto. Las conexiones tardan más de 1 s, NGINX lo cuenta como fallo y el health check pasivo empieza a retirar réplicas. Este punto es inestable: las tres corridas de 20 s entraron en cascada (413 respuestas correctas por segundo), pero una verificación posterior de 15 s terminó con solo 4 errores.</p>
+
+<h3>Un hallazgo no previsto: la cascada del keepalive</h3>
+<p>En nuestra primera configuración habíamos puesto <code>keepalive 64</code> hacia las réplicas, una recomendación habitual para mejorar el rendimiento. La primera batería mostró algo absurdo: con 200 clientes el sistema "rendía" más de 7000 req/s, cuando su capacidad era de 1800. Al mirar el detalle, más del 90 % de las respuestas eran 502 instantáneos y las réplicas estaban sin carga.</p>
+<table><thead><tr><th>Clientes</th><th>Configuración</th><th class="n">2xx/s</th><th class="n">Errores</th><th class="n">Máx.</th></tr></thead><tbody>
+<tr><td>100</td><td>Con keepalive</td><td class="n">1.744</td><td class="n">5 respuestas 504</td><td class="n">2.001 ms</td></tr>
+<tr><td>150</td><td>Con keepalive</td><td class="n">841</td><td class="n">79 %</td><td class="n">2.020 ms</td></tr>
+<tr><td>200</td><td>Con keepalive</td><td class="n">525</td><td class="n"><b>90 %</b></td><td class="n">2.023 ms</td></tr>
+<tr><td>200</td><td>Sin keepalive (final)</td><td class="n">1.667</td><td class="n">0 %</td><td class="n">340 ms</td></tr></tbody></table>
+<p>Algunas peticiones llegaban a esperar más de 2 s y vencían <code>proxy_read_timeout</code>. Esos timeouts cuentan como fallos para <code>max_fails</code>, así que NGINX fue retirando a las tres réplicas, sanas, y se quedó sin destinos (<code>no live upstreams</code>). Cambiando solo esa línea, con 200 clientes pasamos de 90 % de errores a ninguno. Yendo directo a una réplica, sin NGINX, tampoco aparecían esas esperas. No llegamos a aislar el mecanismo exacto; nuestra hipótesis es que Node atiende primero las conexiones reutilizadas y demora las nuevas.</p>
+<p>La enseñanza de fondo es que un mecanismo de resiliencia puede volverse la causa de la caída: el health check pasivo no distingue una réplica muerta de una ocupada, y justo cuando el sistema está más cargado le quita capacidad. También tuvo un costo: sin keepalive, NGINX llega al 99 % de CPU con unas 4.890 req/s, mientras que en una única corrida de calibración con keepalive había alcanzado 10.500. Sacarlo resolvió la cascada, pero baja el techo del balanceador.</p>
+
+<h3>¿Escala linealmente?</h3>
+<p>Casi, pero no del todo. Una réplica con 100 clientes da 649 req/s y p99 de 228 ms. Tres réplicas con el triple de clientes dan 1.767 req/s y p99 de 225 ms: la latencia se mantiene y el caudal se multiplica por 2,72, una eficiencia del 91 %.</p>
+<table><thead><tr><th>Réplicas</th><th class="n">2xx/s (c = 100 y 200)</th><th class="n">Aceleración</th><th class="n">Eficiencia</th><th class="n">p95 con c = 100</th><th class="n">CPU NGINX con c = 100</th></tr></thead><tbody>
+<tr><td>1</td><td class="n">655</td><td class="n">1,00x</td><td class="n">100 %</td><td class="n">190 ms</td><td class="n">62 %</td></tr><tr><td>2</td><td class="n">1.117</td><td class="n">1,70x</td><td class="n">85 %</td><td class="n">151 ms</td><td class="n">46 %</td></tr><tr><td>3</td><td class="n">1.732</td><td class="n">2,64x</td><td class="n">88 %</td><td class="n">79 ms</td><td class="n">29 %</td></tr><tr><td>4</td><td class="n">2.158</td><td class="n">3,29x</td><td class="n">82 %</td><td class="n">81 ms</td><td class="n">42 %</td></tr><tr><td>5</td><td class="n">2.509</td><td class="n">3,83x</td><td class="n">77 %</td><td class="n">94 ms</td><td class="n">46 %</td></tr></tbody></table>
+<p class="nota">La serie de 2 réplicas fue la más ruidosa (entre 924 y 1302 req/s según la corrida), por lo que su eficiencia es menos confiable. NGINX consume más CPU con una réplica que con tres, aunque atiende menos tráfico; no investigamos el motivo.</p>
+<p>La merma no se explica principalmente por el balanceador. Comparando una réplica directa contra la misma réplica detrás de NGINX, con 100 clientes, se pierde un 5,8 % de caudal (689 contra 649 req/s). Además, NGINX no llegó a saturarse en estas pruebas. La eficiencia sigue cayendo al agregar réplicas, hasta 77 % con cinco, y lo atribuimos en parte a que todo comparte una misma máquina, aunque no pudimos aislarlo. A futuro sí habría un límite claro: con unas 500 req/s por réplica, el único worker de NGINX se saturaría cerca de las 10 réplicas.</p>
+
+<h3>¿Cumple con el tiempo real y con lo que toleraría el negocio?</h3>
+<p>Tomamos como restricción de tiempo real el máximo de 2000 ms del contrato. Es tiempo real <i>blando</i>: pasarse degrada el servicio, pero no es una falla catastrófica. Con esa vara:</p>
+<ul>
+<li><b>Hasta 400 clientes</b> se cumplen los tres objetivos, con un máximo de 454 ms.</li>
+<li><b>Con el pool ampliado, de 500 a 1000 clientes,</b> la latencia máxima sigue cumpliendo (661 ms) y el p99 también, pero el p95 no (614 ms). Un usuario esperaría más de lo pactado, aunque recibiría respuesta.</li>
+<li><b>Con el pool de 1024 a partir de 480 clientes,</b> o con el pool ampliado cerca de los 1500, deja de cumplir: lo que falla ya no es el tiempo sino la disponibilidad.</li>
+</ul>
+<p>Tampoco hay una garantía estricta, porque nada acota la cola: el máximo depende de cuántos clientes lleguen. Las corridas individuales también varían. En 2 de 7 corridas adicionales con 100 clientes la distribución salió bimodal, con p95 de hasta 176 ms contra los 82 a 99 ms habituales. Sigue dentro del objetivo, pero no identificamos la causa.</p>
+<p>Para GlobalLogistics, este despliegue <b>no alcanza tal como está</b>. En el TP2 asumimos picos de 10.000 req/s y medimos unas 1750, con un endpoint que ni siquiera consulta una base de datos. Extrapolando, llegar a esa cifra pediría al menos 20 réplicas y más de dos núcleos de NGINX, y es un piso optimista: la eficiencia venía cayendo y el servicio real haría trabajo de E/S que acá no existe. Además, hay un solo balanceador, que es un punto único de falla: la consigna lo pide así para esta prueba, pero contradice el requisito de alta disponibilidad 24/7.</p>
+
+<h3>Limitaciones y qué cambiaríamos</h3>
+<p>Generador y sistema comparten máquina, <code>ab</code> no simula tiempos de espera entre peticiones de un usuario (por eso la CPU se satura con tan pocos clientes) y consulta un único endpoint. Los umbrales absolutos valen para este entorno; lo trasladable son el orden de los fallos y sus causas. Para producción proponemos:</p>
+<ul>
+<li>Dimensionar el pool y los workers de NGINX para la concurrencia esperada, y ampliar el backlog de Node.</li>
+<li>Usar health checks activos que retiren réplicas por su estado real (NGINX Plus, HAProxy o los <i>readiness probes</i> de Kubernetes), en lugar de deducirlo de los timeouts.</li>
+<li>Rechazar el exceso de forma controlada con <i>rate limiting</i> y respuestas 429, como ya definía el contrato del TP2, antes de llegar a los límites.</li>
+<li>Autoescalar por CPU, ya que la saturación aparece mucho antes que los errores y deja margen para reaccionar.</li>
+<li>Replicar el balanceador para eliminar el punto único de falla.</li>
+</ul>
+
+<h2>Conclusión</h2>
+<div class="conc">
+<p>La arquitectura cumple lo que pide la consigna: un balanceador y tres réplicas levantadas con IaC, reparto verificable, tolerancia a la caída de una réplica sin peticiones fallidas y escalado horizontal con una eficiencia cercana al 91 % a tres réplicas. Bajo carga moderada cumple holgadamente los objetivos de latencia.</p>
+<p>El sistema degrada sus tiempos de respuesta desde que se saturan las CPU, cerca de los 10 clientes, de forma gradual y predecible; pierde el objetivo de p95 entre 400 y 450 clientes y deja de estar disponible cerca de los 480. La latencia máxima cumple la restricción de tiempo real blando de 2000 ms en todo el rango sin errores, aunque sin garantía estricta.</p>
+<p>Este comportamiento se explica por la arquitectura desplegada: un proceso de Node por réplica, limitado a un núcleo, fija el caudal; las colas fijan la latencia; y los límites de conexiones y el health check pasivo definen cuándo el sistema pasa de estar lento a estar caído.</p>
+</div>
+
+<h2 class="salto" style="margin-top:0">Anexo: código de los manifiestos</h2>
+<p>El proyecto completo, con el README y los resultados crudos, está en el <a href="https://github.com/santivicente/globallogistics-tp3">repositorio</a>.</p>
+<h3><code>docker-compose.yml</code></h3><pre># Levanta exactamente 1 balanceador y 3 réplicas: docker-compose up -d
+name: tp3
+
+services:
+  api:
+    build: ./api
+    image: globallogistics/api-envios:1.0
+    environment:
+      PORT: "3000"
+      CPU_WORK_ITERATIONS: "${CPU_WORK_ITERATIONS:-3000}"
+    expose:
+      - "3000"
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 256M
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  balanceador:
+    image: nginx:1.28-alpine
+    ports:
+      - "${LB_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 128M
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/nginx-health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # Generador de carga. Por el perfil, "up -d" no lo levanta: se usa con "run".
+  # Corre dentro de la red de Compose para no medir también el reenvío de puertos de Windows.
+  ab:
+    image: httpd:2.4-alpine
+    profiles: ["loadtest"]
+    entrypoint: ["ab"]</pre>
+<h3><code>nginx/nginx.conf</code></h3><pre># Un solo worker con el pool por defecto de NGINX (1024 conexiones). Cada petición
+# ocupa dos: una con el cliente y otra con la réplica, así que el techo real ronda
+# los 512 clientes simultáneos. Lo dejamos así para medir la configuración base;
+# docker-compose.tuned.yml lo amplía para la comparación.
+worker_processes 1;
+error_log /dev/stderr warn;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    access_log off;            # escribir un log por petición falsearía la medición
+
+    # DNS interno de Docker. Permite descubrir réplicas nuevas sin reiniciar NGINX.
+    resolver 127.0.0.11 valid=5s ipv6=off;
+
+    upstream api_envios {
+        zone api_envios 64k;
+        # "api" es el nombre del servicio en Compose, nunca localhost: dentro de este
+        # contenedor, localhost es el propio NGINX. El DNS devuelve las tres réplicas.
+        # Health check pasivo: 3 fallos en 10 s sacan a la réplica de la rotación por 10 s.
+        # Sin "keepalive" a propósito: con él aparecían esperas de más de 2 s que disparaban
+        # este mecanismo sobre las tres réplicas a la vez (ver informe y docker-compose.keepalive.yml).
+        server api:3000 resolve max_fails=3 fail_timeout=10s;
+    }
+
+    server {
+        listen 80;
+
+        # Health check del propio balanceador
+        location = /nginx-health {
+            default_type text/plain;
+            return 200 "ok\n";
+        }
+
+        location / {
+            proxy_pass http://api_envios;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+            # Mismo límite que el contrato del TP2: a los 2000 ms se responde 504.
+            proxy_connect_timeout 1s;
+            proxy_send_timeout 2s;
+            proxy_read_timeout 2s;
+
+            # Si una réplica se cae, la petición se reintenta en otra y el cliente no se
+            # entera. No se reintenta por timeout: bajo saturación eso solo agregaría carga.
+            proxy_next_upstream error http_502 http_503;
+            proxy_next_upstream_tries 2;
+
+            add_header X-Upstream $upstream_addr always;
+        }
+    }
+}</pre>
+<h3><code>api/server.js</code></h3><pre>const crypto = require('crypto');
+const os = require('os');
+const express = require('express');
+
+const PORT = Number(process.env.PORT) || 3000;
+// Trabajo de CPU por petición. Un endpoint que solo devuelve un JSON no satura nada:
+// esto hace las veces de la validación y el cálculo que haría el servicio real.
+// Usamos iteraciones fijas (y no "esperar N ms") para que el costo sea CPU de verdad
+// y el límite de cpus del contenedor lo afecte. Con 0 se desactiva.
+const CPU_WORK_ITERATIONS = Number(process.env.CPU_WORK_ITERATIONS) || 0;
+const INSTANCIA = os.hostname(); // en Docker, el hostname es el ID corto del contenedor
+
+const app = express();
+app.disable('x-powered-by');
+
+app.get('/', (req, res) =&gt; {
+  if (CPU_WORK_ITERATIONS &gt; 0) {
+    crypto.pbkdf2Sync('envio', 'globallogistics', CPU_WORK_ITERATIONS, 32, 'sha256');
+  }
+  res.json({ servicio: 'api-envios', instancia: INSTANCIA, estado: 'ok' });
+});
+
+// Lo consulta el healthcheck de Docker. No hace trabajo de CPU a propósito:
+// responde si el proceso está vivo y su event loop no está trabado.
+app.get('/health', (req, res) =&gt; {
+  res.json({ estado: 'ok', instancia: INSTANCIA, uptime: Math.round(process.uptime()) });
+});
+
+const server = app.listen(PORT, () =&gt; {
+  console.log(`api-envios escuchando en :${PORT} (instancia ${INSTANCIA})`);
+});
+
+// Solo importa con la variante docker-compose.keepalive.yml: tiene que superar el keepalive
+// de NGINX para que Node no cierre conexiones que NGINX cree abiertas.
+server.keepAliveTimeout = 75000;
+server.headersTimeout = 76000;
+
+// Apagado ordenado: termina lo que está en curso antes de salir.
+process.on('SIGTERM', () =&gt; {
+  server.close(() =&gt; process.exit(0));
+  setTimeout(() =&gt; process.exit(0), 5000).unref();
+});</pre>
+<h3><code>api/Dockerfile</code></h3><pre>FROM node:22-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY server.js ./
+USER node
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["node", "server.js"]</pre>
+</body></html>

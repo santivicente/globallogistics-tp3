@@ -1,0 +1,46 @@
+ Container tp3-ab-run-d605ca29a1fd Creating 
+ Container tp3-ab-run-d605ca29a1fd Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Finished 32231 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      100
+Time taken for tests:   20.000 seconds
+Complete requests:      32231
+Failed requests:        0
+Non-2xx responses:      7
+Total transferred:      9701895 bytes
+HTML transferred:       2127953 bytes
+Requests per second:    1611.54 [#/sec] (mean)
+Time per request:       62.052 [ms] (mean)
+Time per request:       0.621 [ms] (mean, across all concurrent requests)
+Transfer rate:          473.72 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.2      0       5
+Processing:     1   62  72.3     64    2001
+Waiting:        1   62  72.3     64    2001
+Total:          2   62  72.3     64    2001
+
+Percentage of the requests served within a certain time (ms)
+  50%     64
+  66%     71
+  75%     73
+  80%     75
+  90%     81
+  95%     90
+  98%    123
+  99%    146
+ 100%   2001 (longest request)

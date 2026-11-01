@@ -1,0 +1,46 @@
+ Container tp3-ab-run-ccde385a8d79 Creating 
+ Container tp3-ab-run-ccde385a8d79 Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Finished 101537 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      150
+Time taken for tests:   20.002 seconds
+Complete requests:      101537
+Failed requests:        0
+Non-2xx responses:      92383
+Total transferred:      33542172 bytes
+HTML transferred:       15116639 bytes
+Requests per second:    5076.35 [#/sec] (mean)
+Time per request:       29.549 [ms] (mean)
+Time per request:       0.197 [ms] (mean, across all concurrent requests)
+Transfer rate:          1637.64 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    5   1.8      5      13
+Processing:     0   25 158.2      8    2011
+Waiting:        0   23 158.3      6    2011
+Total:          0   29 157.8     13    2013
+
+Percentage of the requests served within a certain time (ms)
+  50%     13
+  66%     13
+  75%     13
+  80%     14
+  90%     19
+  95%     53
+  98%     73
+  99%    101
+ 100%   2013 (longest request)

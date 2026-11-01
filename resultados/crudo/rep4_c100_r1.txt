@@ -1,0 +1,45 @@
+ Container tp3-ab-run-790b90fc8b6e Creating 
+ Container tp3-ab-run-790b90fc8b6e Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Finished 39688 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      100
+Time taken for tests:   20.000 seconds
+Complete requests:      39688
+Failed requests:        0
+Total transferred:      11946088 bytes
+HTML transferred:       2619408 bytes
+Requests per second:    1984.40 [#/sec] (mean)
+Time per request:       50.393 [ms] (mean)
+Time per request:       0.504 [ms] (mean, across all concurrent requests)
+Transfer rate:          583.30 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.4      0      13
+Processing:     2   50  29.3     44     195
+Waiting:        2   50  29.3     43     195
+Total:          2   50  29.3     44     195
+
+Percentage of the requests served within a certain time (ms)
+  50%     44
+  66%     53
+  75%     66
+  80%     77
+  90%     96
+  95%    102
+  98%    113
+  99%    124
+ 100%    195 (longest request)

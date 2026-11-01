@@ -1,0 +1,45 @@
+ Container tp3-ab-run-2ca7ed742cfa Creating 
+ Container tp3-ab-run-2ca7ed742cfa Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Finished 10570 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      1
+Time taken for tests:   20.001 seconds
+Complete requests:      10570
+Failed requests:        0
+Total transferred:      3181570 bytes
+HTML transferred:       697620 bytes
+Requests per second:    528.46 [#/sec] (mean)
+Time per request:       1.892 [ms] (mean)
+Time per request:       1.892 [ms] (mean, across all concurrent requests)
+Transfer rate:          155.34 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.0      0       1
+Processing:     1    2   0.4      2      27
+Waiting:        1    2   0.4      2      27
+Total:          2    2   0.4      2      27
+
+Percentage of the requests served within a certain time (ms)
+  50%      2
+  66%      2
+  75%      2
+  80%      2
+  90%      2
+  95%      2
+  98%      3
+  99%      3
+ 100%     27 (longest request)

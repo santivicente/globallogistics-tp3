@@ -1,0 +1,9 @@
+{
+  "name": "api-envios",
+  "version": "1.0.0",
+  "description": "Microservicio de prueba para el TP3 de Arquitectura de Sistemas (GlobalLogistics S.A.)",
+  "main": "server.js",
+  "private": true,
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "4.21.2" }
+}

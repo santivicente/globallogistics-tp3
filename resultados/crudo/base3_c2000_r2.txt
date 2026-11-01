@@ -1,0 +1,47 @@
+ Container tp3-ab-run-ced4bf821ff8 Creating 
+ Container tp3-ab-run-ced4bf821ff8 Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Completed 200000 requests
+Finished 278409 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      2000
+Time taken for tests:   20.062 seconds
+Complete requests:      278409
+Failed requests:        277687
+   (Connect: 0, Receive: 2366, Length: 0, Exceptions: 275321)
+Total transferred:      916545 bytes
+HTML transferred:       200970 bytes
+Requests per second:    13877.47 [#/sec] (mean)
+Time per request:       144.118 [ms] (mean)
+Time per request:       0.072 [ms] (mean, across all concurrent requests)
+Transfer rate:          44.62 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0   71  31.3     70    1103
+Processing:    31   72  13.4     70     384
+Waiting:        0    2  15.9      0     325
+Total:        101  143  34.2    140    1266
+
+Percentage of the requests served within a certain time (ms)
+  50%    140
+  66%    141
+  75%    143
+  80%    145
+  90%    152
+  95%    160
+  98%    171
+  99%    184
+ 100%   1266 (longest request)

@@ -1,0 +1,46 @@
+ Container tp3-ab-run-c99cfce544bc Creating 
+ Container tp3-ab-run-c99cfce544bc Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Completed 200000 requests
+Finished 220922 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /nginx-health
+Document Length:        Variable
+
+Concurrency Level:      100
+Time taken for tests:   20.000 seconds
+Complete requests:      220922
+Failed requests:        0
+Total transferred:      32037170 bytes
+HTML transferred:       662838 bytes
+Requests per second:    11045.84 [#/sec] (mean)
+Time per request:       9.053 [ms] (mean)
+Time per request:       0.091 [ms] (mean, across all concurrent requests)
+Transfer rate:          1564.28 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    4   0.8      4      18
+Processing:     2    5   1.1      5      25
+Waiting:        0    4   1.2      3      20
+Total:          7    9   1.1      9      33
+
+Percentage of the requests served within a certain time (ms)
+  50%      9
+  66%      9
+  75%      9
+  80%      9
+  90%     10
+  95%     11
+  98%     12
+  99%     13
+ 100%     33 (longest request)

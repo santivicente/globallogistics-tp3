@@ -1,0 +1,7 @@
+# Reproduce el fallo en cascada que encontramos: agrega keepalive hacia las réplicas.
+# Uso: docker-compose -f docker-compose.yml -f docker-compose.keepalive.yml up -d
+services:
+  balanceador:
+    command: >
+      sh -c "sed 's/zone api_envios 64k;/zone api_envios 64k; keepalive 64;/' /etc/nginx/nginx.conf > /tmp/nginx.conf
+      && exec nginx -c /tmp/nginx.conf -g 'daemon off;'"

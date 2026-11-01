@@ -1,0 +1,47 @@
+ Container tp3-ab-run-f3615a1a318f Creating 
+ Container tp3-ab-run-f3615a1a318f Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking api (be patient)
+Finished 12672 requests
+
+
+Server Software:        
+Server Hostname:        api
+Server Port:            3000
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      1
+Time taken for tests:   20.001 seconds
+Complete requests:      12672
+Failed requests:        0
+Total transferred:      3168000 bytes
+HTML transferred:       836352 bytes
+Requests per second:    633.58 [#/sec] (mean)
+Time per request:       1.578 [ms] (mean)
+Time per request:       1.578 [ms] (mean, across all concurrent requests)
+Transfer rate:          154.68 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.0      0       1
+Processing:     1    1   0.4      1      28
+Waiting:        1    1   0.4      1      28
+Total:          1    2   0.4      1      28
+ERROR: The median and mean for the total time are more than twice the standard
+       deviation apart. These results are NOT reliable.
+
+Percentage of the requests served within a certain time (ms)
+  50%      1
+  66%      2
+  75%      2
+  80%      2
+  90%      2
+  95%      2
+  98%      2
+  99%      2
+ 100%     28 (longest request)
