@@ -4,12 +4,16 @@ name: tp3
 services:
   api:
     build: ./api
-    image: globallogistics/api-envios:1.0
+    # 1.1: backlog ampliado. Cambiar la versión obliga a reconstruir; con la misma,
+    # "up -d" reutilizaría una imagen vieja que haya quedado en la máquina.
+    image: globallogistics/api-envios:1.1
     environment:
       PORT: "3000"
       CPU_WORK_ITERATIONS: "${CPU_WORK_ITERATIONS:-3000}"
     expose:
       - "3000"
+    sysctls:
+      net.core.somaxconn: 4096     # techo del backlog de server.js
     deploy:
       replicas: 3
       resources:
