@@ -4,12 +4,19 @@ name: tp3
 services:
   api:
     build: ./api
-    image: globallogistics/api-envios:1.0
+    # 1.2: hilo de salud (1.1: backlog ampliado). Cambiar la versión obliga a reconstruir;
+    # con la misma, "up -d" reutilizaría una imagen vieja que haya quedado en la máquina.
+    image: globallogistics/api-envios:1.2
+    # El hilo de salud reinicia la réplica si se cuelga, y el kernel no deja que el
+    # PID 1 se mate a sí mismo: con init, Node deja de serlo.
+    init: true
     environment:
       PORT: "3000"
       CPU_WORK_ITERATIONS: "${CPU_WORK_ITERATIONS:-3000}"
     expose:
       - "3000"
+    sysctls:
+      net.core.somaxconn: 4096     # techo del backlog de server.js
     deploy:
       replicas: 3
       resources:
@@ -17,8 +24,10 @@ services:
           cpus: "1.0"
           memory: 256M
     restart: unless-stopped
+    # Consulta el hilo de salud (api/salud.js) y no la API: así no queda detrás de la cola
+    # de peticiones y no marca como caída a una réplica que solo está saturada.
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3001/health"]
       interval: 5s
       timeout: 3s
       retries: 3
@@ -40,11 +49,14 @@ services:
       # y NGINX retiraba a las tres réplicas sanas. Con 1, el kernel reutiliza un puerto en
       # TIME_WAIT cuando es seguro hacerlo (usa los timestamps de TCP).
       net.ipv4.tcp_tw_reuse: 1
+      net.core.somaxconn: 4096     # techo del backlog de "listen" en nginx.conf
+    ulimits:
+      nofile: 65536                # alcanza para los 32.768 worker_connections
     deploy:
       resources:
         limits:
           cpus: "1.0"
-          memory: 128M
+          memory: 256M             # con 20.000 clientes (el máximo de ab) NGINX usa ~165 MB
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/nginx-health"]

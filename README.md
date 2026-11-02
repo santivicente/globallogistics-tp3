@@ -33,6 +33,15 @@ curl http://localhost/
 
 el campo `instancia` va rotando entre tres IDs.
 
+## Health checks
+
+- **Pasivo, en NGINX:** `max_fails=3 fail_timeout=10s`. Si una réplica falla tres veces en 10 s, sale de la rotación por 10 s. Si lo que falla es la conexión, la petición se reintenta en otra réplica.
+- **Activo, en cada réplica:** un hilo aparte (`api/salud.js`) vigila que el event loop siga avanzando. El healthcheck de Docker lo consulta en el puerto 3001, así que una réplica saturada sigue figurando como sana. Si el event loop se detiene más de 10 s, el hilo termina el proceso y Docker vuelve a levantar la réplica.
+
+```bash
+docker-compose exec api wget -qO- http://127.0.0.1:3001/health   # {"estado":"ok","atraso_ms":...}
+```
+
 ## Reproducir las pruebas de carga
 
 `ab` corre dentro de la red de Compose. Así no se mide también el reenvío de puertos de Docker Desktop.
@@ -41,8 +50,11 @@ el campo `instancia` va rotando entre tres IDs.
 # Concurrencia moderada
 docker-compose run --rm -T ab -l -r -t 20 -n 2000000 -c 100 http://balanceador/
 
-# Concurrencia extrema: agota el pool de conexiones de NGINX
+# Concurrencia extrema: satura la CPU de las réplicas y las peticiones hacen cola
 docker-compose run --rm -T ab -l -r -t 20 -n 2000000 -c 1000 http://balanceador/
+
+# Sobrecarga: más de 1500 peticiones en curso; el exceso recibe 429 al instante
+docker-compose run --rm -T ab -l -r -t 20 -n 2000000 -c 3000 http://balanceador/
 
 # Carga sostenida: descarta que algo se agote con el tiempo
 docker-compose run --rm -T ab -l -r -t 120 -n 5000000 -c 100 http://balanceador/
@@ -59,14 +71,11 @@ docker logs tp3-balanceador-1 2>&1 | grep -E "worker_connections|no live upstrea
 | `-l` | acepta respuestas de distinto largo; sin esto, cada ID distinto contaría como fallo |
 | `-r` | no aborta ante un error de conexión |
 
-**Cuidado al leer el reporte:** `ab` cuenta los errores como peticiones completas, y como un error es instantáneo, las req/s suben y los percentiles bajan cuando el sistema está fallando. Hay que mirar siempre `Failed requests` y `Non-2xx responses`.
+**Cuidado al leer el reporte:** `ab` cuenta los errores como peticiones completas, y como un error es instantáneo, las req/s suben y los percentiles bajan cuando el sistema está fallando. Hay que mirar siempre `Failed requests` y `Non-2xx responses`. En sobrecarga, los 429 del control de admisión también se cuentan como `Non-2xx responses`: lo que mide la capacidad es el caudal de respuestas 2xx.
 
-### Variantes de configuración
+### Variante de configuración
 
 ```bash
-# Pool de NGINX ampliado a 8192 conexiones
-docker-compose -f docker-compose.yml -f docker-compose.tuned.yml up -d
-
 # Keepalive hacia las réplicas: reproduce el fallo en cascada (probar con -c 200)
 docker-compose -f docker-compose.yml -f docker-compose.keepalive.yml up -d
 
@@ -82,7 +91,7 @@ Requiere bash (Linux, macOS o Git Bash en Windows) y Node.js para el resumen. Ta
 ```bash
 bash scripts/run-benchmarks.sh
 node scripts/parse-resultados.js    # genera resultados/resumen.csv
-bash scripts/prueba-resiliencia.sh  # caída de réplica, autorreinicio y escalado
+bash scripts/prueba-resiliencia.sh  # caída de réplica, autorreinicio, escalado y cuelgue
 ```
 
 Conviene cerrar aplicaciones pesadas durante las pruebas, porque comparten la máquina con los contenedores.
@@ -98,9 +107,9 @@ docker-compose down
 | Ruta | Contenido |
 |---|---|
 | `docker-compose.yml` | Manifiesto principal: 1 balanceador y 3 réplicas |
-| `docker-compose.tuned.yml`, `docker-compose.keepalive.yml` | Variantes usadas para comparar |
-| `api/` | Microservicio y su Dockerfile |
-| `nginx/nginx.conf` | Balanceo y health checks |
+| `docker-compose.keepalive.yml` | Variante con keepalive, para reproducir el fallo en cascada |
+| `api/` | Microservicio (`server.js`), su health check (`salud.js`) y su Dockerfile |
+| `nginx/nginx.conf` | Balanceo, health checks y control de admisión |
 | `scripts/` | Automatización de las pruebas |
 | `resultados/` | Reportes crudos de `ab`, resumen y corrida inicial con keepalive |
 | `informe/` | Capturas y generador del informe en PDF |
