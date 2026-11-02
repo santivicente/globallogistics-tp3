@@ -1,11 +1,11 @@
- Container tp3-ab-run-5b5f9e392027 Creating 
- Container tp3-ab-run-5b5f9e392027 Created 
+ Container tp3-ab-run-cc3bd7602de4 Creating 
+ Container tp3-ab-run-cc3bd7602de4 Created 
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking balanceador (be patient)
-Finished 11032 requests
+Finished 11042 requests
 
 
 Server Software:        nginx/1.28.3
@@ -17,21 +17,21 @@ Document Length:        Variable
 
 Concurrency Level:      1
 Time taken for tests:   20.001 seconds
-Complete requests:      11032
+Complete requests:      11042
 Failed requests:        0
-Total transferred:      3320632 bytes
-HTML transferred:       728112 bytes
-Requests per second:    551.58 [#/sec] (mean)
-Time per request:       1.813 [ms] (mean)
-Time per request:       1.813 [ms] (mean, across all concurrent requests)
-Transfer rate:          162.13 [Kbytes/sec] received
+Total transferred:      3323642 bytes
+HTML transferred:       728772 bytes
+Requests per second:    552.06 [#/sec] (mean)
+Time per request:       1.811 [ms] (mean)
+Time per request:       1.811 [ms] (mean, across all concurrent requests)
+Transfer rate:          162.28 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
 Connect:        0    0   0.0      0       0
-Processing:     1    2   0.2      2       5
-Waiting:        1    2   0.2      2       5
-Total:          1    2   0.2      2       5
+Processing:     1    2   0.2      2       8
+Waiting:        1    2   0.2      2       8
+Total:          2    2   0.2      2       8
 
 Percentage of the requests served within a certain time (ms)
   50%      2
@@ -41,5 +41,5 @@ Percentage of the requests served within a certain time (ms)
   90%      2
   95%      2
   98%      2
-  99%      2
- 100%      5 (longest request)
+  99%      3
+ 100%      8 (longest request)

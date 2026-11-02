@@ -1,11 +1,11 @@
- Container tp3-ab-run-abd52e10d5e6 Creating 
- Container tp3-ab-run-abd52e10d5e6 Created 
+ Container tp3-ab-run-2ac9811a304e Creating 
+ Container tp3-ab-run-2ac9811a304e Created 
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking balanceador (be patient)
-Finished 33217 requests
+Finished 36825 requests
 
 
 Server Software:        nginx/1.28.3
@@ -17,29 +17,29 @@ Document Length:        Variable
 
 Concurrency Level:      450
 Time taken for tests:   20.000 seconds
-Complete requests:      33217
+Complete requests:      36825
 Failed requests:        0
-Total transferred:      9998317 bytes
-HTML transferred:       2192322 bytes
-Requests per second:    1660.85 [#/sec] (mean)
-Time per request:       270.946 [ms] (mean)
-Time per request:       0.602 [ms] (mean, across all concurrent requests)
-Transfer rate:          488.20 [Kbytes/sec] received
+Total transferred:      11084325 bytes
+HTML transferred:       2430450 bytes
+Requests per second:    1841.25 [#/sec] (mean)
+Time per request:       244.399 [ms] (mean)
+Time per request:       0.543 [ms] (mean, across all concurrent requests)
+Transfer rate:          541.23 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0    0   2.1      0      28
-Processing:    12  269  39.4    261     503
-Waiting:        4  269  39.4    261     503
-Total:         32  269  38.6    261     503
+Connect:        0    0   2.0      0      29
+Processing:     9  242  33.6    242     334
+Waiting:        2  242  33.6    242     334
+Total:         31  243  32.7    243     334
 
 Percentage of the requests served within a certain time (ms)
-  50%    261
-  66%    274
-  75%    286
-  80%    293
-  90%    315
-  95%    333
-  98%    362
-  99%    414
- 100%    503 (longest request)
+  50%    243
+  66%    258
+  75%    266
+  80%    270
+  90%    282
+  95%    294
+  98%    307
+  99%    315
+ 100%    334 (longest request)

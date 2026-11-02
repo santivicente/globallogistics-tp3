@@ -1,0 +1,45 @@
+ Container tp3-ab-run-e4a854c2fbfe Creating 
+ Container tp3-ab-run-e4a854c2fbfe Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Finished 35725 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      1500
+Time taken for tests:   20.000 seconds
+Complete requests:      35725
+Failed requests:        0
+Total transferred:      10753225 bytes
+HTML transferred:       2357850 bytes
+Requests per second:    1786.22 [#/sec] (mean)
+Time per request:       839.762 [ms] (mean)
+Time per request:       0.560 [ms] (mean, across all concurrent requests)
+Transfer rate:          525.05 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    2  11.1      0      85
+Processing:    24  819 129.0    811    1197
+Waiting:        2  819 129.0    811    1197
+Total:         87  821 120.8    811    1198
+
+Percentage of the requests served within a certain time (ms)
+  50%    811
+  66%    834
+  75%    852
+  80%    868
+  90%    912
+  95%   1034
+  98%   1142
+  99%   1164
+ 100%   1198 (longest request)

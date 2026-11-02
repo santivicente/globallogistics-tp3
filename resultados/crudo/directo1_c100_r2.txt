@@ -1,11 +1,11 @@
- Container tp3-ab-run-5e43a0597f91 Creating 
- Container tp3-ab-run-5e43a0597f91 Created 
+ Container tp3-ab-run-e68c03e13ea0 Creating 
+ Container tp3-ab-run-e68c03e13ea0 Created 
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking api (be patient)
-Finished 13776 requests
+Finished 14154 requests
 
 
 Server Software:        
@@ -16,30 +16,30 @@ Document Path:          /
 Document Length:        Variable
 
 Concurrency Level:      100
-Time taken for tests:   20.000 seconds
-Complete requests:      13776
+Time taken for tests:   20.001 seconds
+Complete requests:      14154
 Failed requests:        0
-Total transferred:      3444000 bytes
-HTML transferred:       909216 bytes
-Requests per second:    688.80 [#/sec] (mean)
-Time per request:       145.180 [ms] (mean)
-Time per request:       1.452 [ms] (mean, across all concurrent requests)
-Transfer rate:          168.16 [Kbytes/sec] received
+Total transferred:      3538500 bytes
+HTML transferred:       934164 bytes
+Requests per second:    707.66 [#/sec] (mean)
+Time per request:       141.311 [ms] (mean)
+Time per request:       1.413 [ms] (mean, across all concurrent requests)
+Transfer rate:          172.77 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0    0   0.4      0       6
-Processing:     5  145  11.3    141     190
-Waiting:        2  144  13.1    141     190
-Total:          8  145  11.2    141     190
+Connect:        0    0   0.5      0       7
+Processing:     2  141  12.0    137     204
+Waiting:        2  140  13.4    137     203
+Total:          9  141  12.0    137     204
 
 Percentage of the requests served within a certain time (ms)
-  50%    141
-  66%    144
-  75%    148
-  80%    150
-  90%    156
-  95%    165
-  98%    174
-  99%    176
- 100%    190 (longest request)
+  50%    137
+  66%    140
+  75%    143
+  80%    146
+  90%    155
+  95%    164
+  98%    176
+  99%    179
+ 100%    204 (longest request)

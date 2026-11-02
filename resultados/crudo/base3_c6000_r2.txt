@@ -1,0 +1,46 @@
+ Container tp3-ab-run-c7735a231510 Creating 
+ Container tp3-ab-run-c7735a231510 Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Finished 198749 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      6000
+Time taken for tests:   20.050 seconds
+Complete requests:      198749
+Failed requests:        0
+Non-2xx responses:      165982
+Total transferred:      64507104 bytes
+HTML transferred:       30294298 bytes
+Requests per second:    9912.77 [#/sec] (mean)
+Time per request:       605.280 [ms] (mean)
+Time per request:       0.101 [ms] (mean, across all concurrent requests)
+Transfer rate:          3141.94 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0  188  30.9    189     339
+Processing:    76  400 306.8    278    1295
+Waiting:        2  337 305.5    229    1222
+Total:        341  588 316.0    452    1522
+
+Percentage of the requests served within a certain time (ms)
+  50%    452
+  66%    462
+  75%    478
+  80%    488
+  90%   1280
+  95%   1314
+  98%   1360
+  99%   1393
+ 100%   1522 (longest request)

@@ -1,11 +1,11 @@
- Container tp3-ab-run-9a14f2e07ffe Creating 
- Container tp3-ab-run-9a14f2e07ffe Created 
+ Container tp3-ab-run-3e892a7f39b8 Creating 
+ Container tp3-ab-run-3e892a7f39b8 Created 
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking balanceador (be patient)
-Finished 104259 requests
+Finished 99854 requests
 
 
 Server Software:        nginx/1.28.3
@@ -16,31 +16,31 @@ Document Path:          /
 Document Length:        Variable
 
 Concurrency Level:      150
-Time taken for tests:   20.004 seconds
-Complete requests:      104259
+Time taken for tests:   20.001 seconds
+Complete requests:      99854
 Failed requests:        0
-Non-2xx responses:      94009
-Total transferred:      34415151 bytes
-HTML transferred:       15444647 bytes
-Requests per second:    5212.03 [#/sec] (mean)
-Time per request:       28.780 [ms] (mean)
-Time per request:       0.192 [ms] (mean, across all concurrent requests)
-Transfer rate:          1680.13 [Kbytes/sec] received
+Non-2xx responses:      86248
+Total transferred:      32835913 bytes
+HTML transferred:       14445260 bytes
+Requests per second:    4992.34 [#/sec] (mean)
+Time per request:       30.046 [ms] (mean)
+Time per request:       0.200 [ms] (mean, across all concurrent requests)
+Transfer rate:          1603.20 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0    5   1.8      5      13
-Processing:     0   24 157.1      8    2017
-Waiting:        0   23 157.2      6    2017
-Total:          0   29 156.7     13    2020
+Connect:        0    5   2.0      5      15
+Processing:     0   25 131.0      8    2009
+Waiting:        0   24 131.1      6    2007
+Total:          0   30 130.4     13    2009
 
 Percentage of the requests served within a certain time (ms)
   50%     13
   66%     13
-  75%     13
-  80%     13
-  90%     17
-  95%     51
-  98%     70
-  99%     87
- 100%   2020 (longest request)
+  75%     14
+  80%     15
+  90%     59
+  95%     81
+  98%    108
+  99%    124
+ 100%   2009 (longest request)

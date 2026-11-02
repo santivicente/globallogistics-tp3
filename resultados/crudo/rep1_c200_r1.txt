@@ -1,11 +1,11 @@
- Container tp3-ab-run-eb85a4da156d Creating 
- Container tp3-ab-run-eb85a4da156d Created 
+ Container tp3-ab-run-43d2a34aa54d Creating 
+ Container tp3-ab-run-43d2a34aa54d Created 
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking balanceador (be patient)
-Finished 13425 requests
+Finished 14059 requests
 
 
 Server Software:        nginx/1.28.3
@@ -17,29 +17,29 @@ Document Length:        Variable
 
 Concurrency Level:      200
 Time taken for tests:   20.000 seconds
-Complete requests:      13425
+Complete requests:      14059
 Failed requests:        0
-Total transferred:      4040925 bytes
-HTML transferred:       886050 bytes
-Requests per second:    671.24 [#/sec] (mean)
-Time per request:       297.958 [ms] (mean)
-Time per request:       1.490 [ms] (mean, across all concurrent requests)
-Transfer rate:          197.31 [Kbytes/sec] received
+Total transferred:      4231759 bytes
+HTML transferred:       927894 bytes
+Requests per second:    702.94 [#/sec] (mean)
+Time per request:       284.518 [ms] (mean)
+Time per request:       1.423 [ms] (mean, across all concurrent requests)
+Transfer rate:          206.63 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0    0   1.2      0      14
-Processing:     7  295  25.6    293     364
-Waiting:        2  295  25.6    293     364
-Total:         16  296  24.7    293     365
+Connect:        0    0   1.0      0      14
+Processing:     8  282  23.8    278     365
+Waiting:        2  282  23.8    278     365
+Total:         16  282  23.0    278     365
 
 Percentage of the requests served within a certain time (ms)
-  50%    293
-  66%    298
-  75%    302
-  80%    305
-  90%    321
-  95%    330
-  98%    336
-  99%    351
+  50%    278
+  66%    285
+  75%    290
+  80%    294
+  90%    304
+  95%    313
+  98%    325
+  99%    354
  100%    365 (longest request)

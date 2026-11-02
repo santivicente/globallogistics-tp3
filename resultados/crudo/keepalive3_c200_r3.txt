@@ -1,11 +1,11 @@
- Container tp3-ab-run-9cacb16a01ad Creating 
- Container tp3-ab-run-9cacb16a01ad Created 
+ Container tp3-ab-run-552b65fbe6ff Creating 
+ Container tp3-ab-run-552b65fbe6ff Created 
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking balanceador (be patient)
-Finished 102729 requests
+Finished 103985 requests
 
 
 Server Software:        nginx/1.28.3
@@ -16,31 +16,31 @@ Document Path:          /
 Document Length:        Variable
 
 Concurrency Level:      200
-Time taken for tests:   20.000 seconds
-Complete requests:      102729
+Time taken for tests:   20.002 seconds
+Complete requests:      103985
 Failed requests:        0
-Non-2xx responses:      92236
-Total transferred:      33907337 bytes
-HTML transferred:       15186036 bytes
-Requests per second:    5136.44 [#/sec] (mean)
-Time per request:       38.937 [ms] (mean)
-Time per request:       0.195 [ms] (mean, across all concurrent requests)
-Transfer rate:          1655.63 [Kbytes/sec] received
+Non-2xx responses:      92230
+Total transferred:      34284339 bytes
+HTML transferred:       15268124 bytes
+Requests per second:    5198.85 [#/sec] (mean)
+Time per request:       38.470 [ms] (mean)
+Time per request:       0.192 [ms] (mean, across all concurrent requests)
+Transfer rate:          1673.91 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0    6   2.5      7      15
-Processing:     0   32 190.3     10    2019
-Waiting:        0   31 190.5      9    2018
-Total:          0   39 189.8     17    2023
+Connect:        0    6   2.6      7      20
+Processing:     0   32 187.8     10    2019
+Waiting:        0   30 188.0      8    2018
+Total:          0   38 187.4     17    2023
 
 Percentage of the requests served within a certain time (ms)
   50%     17
   66%     17
   75%     18
   80%     19
-  90%     23
-  95%     54
-  98%     70
-  99%    585
+  90%     24
+  95%     53
+  98%     72
+  99%    450
  100%   2023 (longest request)

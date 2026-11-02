@@ -1,0 +1,46 @@
+ Container tp3-ab-run-64015f51bab7 Creating 
+ Container tp3-ab-run-64015f51bab7 Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Finished 199566 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      4000
+Time taken for tests:   20.054 seconds
+Complete requests:      199566
+Failed requests:        0
+Non-2xx responses:      166022
+Total transferred:      64603561 bytes
+HTML transferred:       30319340 bytes
+Requests per second:    9951.35 [#/sec] (mean)
+Time per request:       401.956 [ms] (mean)
+Time per request:       0.100 [ms] (mean, across all concurrent requests)
+Transfer rate:          3145.95 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0  104  17.0    105     226
+Processing:    64  289 313.1    154    1140
+Waiting:        2  253 311.5    127    1097
+Total:        200  393 318.6    251    1256
+
+Percentage of the requests served within a certain time (ms)
+  50%    251
+  66%    258
+  75%    267
+  80%    279
+  90%   1090
+  95%   1129
+  98%   1153
+  99%   1166
+ 100%   1256 (longest request)

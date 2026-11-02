@@ -1,0 +1,46 @@
+ Container tp3-ab-run-ec48d62d34fd Creating 
+ Container tp3-ab-run-ec48d62d34fd Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Finished 38359 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      480
+Time taken for tests:   20.000 seconds
+Complete requests:      38359
+Failed requests:        3905
+   (Connect: 0, Receive: 1677, Length: 0, Exceptions: 2228)
+Total transferred:      10783927 bytes
+HTML transferred:       2364582 bytes
+Requests per second:    1917.94 [#/sec] (mean)
+Time per request:       250.268 [ms] (mean)
+Time per request:       0.521 [ms] (mean, across all concurrent requests)
+Transfer rate:          526.56 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   2.1      0      30
+Processing:     0  248  75.0    252     369
+Waiting:        0  248  75.0    252     369
+Total:          0  248  74.6    252     369
+
+Percentage of the requests served within a certain time (ms)
+  50%    252
+  66%    270
+  75%    294
+  80%    302
+  90%    313
+  95%    327
+  98%    342
+  99%    352
+ 100%    369 (longest request)

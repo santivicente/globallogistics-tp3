@@ -111,5 +111,5 @@ docker-compose down
 | `api/` | Microservicio (`server.js`), su health check (`salud.js`) y su Dockerfile |
 | `nginx/nginx.conf` | Balanceo, health checks y control de admisión |
 | `scripts/` | Automatización de las pruebas |
-| `resultados/` | Reportes crudos de `ab`, resumen y corrida inicial con keepalive |
+| `resultados/` | Reportes crudos de `ab` y resumen. En `config-previa/` y `config-inicial-keepalive/`, las mediciones anteriores a las correcciones |
 | `informe/` | Capturas y generador del informe en PDF |

@@ -1,11 +1,11 @@
- Container tp3-ab-run-79736e77382d Creating 
- Container tp3-ab-run-79736e77382d Created 
+ Container tp3-ab-run-428bc5b65f52 Creating 
+ Container tp3-ab-run-428bc5b65f52 Created 
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking balanceador (be patient)
-Finished 35290 requests
+Finished 35852 requests
 
 
 Server Software:        nginx/1.28.3
@@ -16,30 +16,30 @@ Document Path:          /
 Document Length:        Variable
 
 Concurrency Level:      10
-Time taken for tests:   20.001 seconds
-Complete requests:      35290
+Time taken for tests:   20.000 seconds
+Complete requests:      35852
 Failed requests:        0
-Total transferred:      10622290 bytes
-HTML transferred:       2329140 bytes
-Requests per second:    1764.42 [#/sec] (mean)
-Time per request:       5.668 [ms] (mean)
-Time per request:       0.567 [ms] (mean, across all concurrent requests)
-Transfer rate:          518.64 [Kbytes/sec] received
+Total transferred:      10791452 bytes
+HTML transferred:       2366232 bytes
+Requests per second:    1792.58 [#/sec] (mean)
+Time per request:       5.579 [ms] (mean)
+Time per request:       0.558 [ms] (mean, across all concurrent requests)
+Transfer rate:          526.92 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
 Connect:        0    0   0.0      0       2
-Processing:     1    6   3.4      5      36
-Waiting:        1    6   3.4      5      36
-Total:          1    6   3.4      5      36
+Processing:     1    5   3.1      5      40
+Waiting:        1    5   3.1      5      40
+Total:          2    6   3.1      5      40
 
 Percentage of the requests served within a certain time (ms)
   50%      5
   66%      6
-  75%      8
-  80%      9
-  90%     11
-  95%     12
-  98%     13
+  75%      7
+  80%      8
+  90%     10
+  95%     11
+  98%     12
   99%     14
- 100%     36 (longest request)
+ 100%     40 (longest request)

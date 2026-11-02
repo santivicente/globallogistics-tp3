@@ -1,11 +1,11 @@
- Container tp3-ab-run-76dc39e37560 Creating 
- Container tp3-ab-run-76dc39e37560 Created 
+ Container tp3-ab-run-b3a7491fbcc5 Creating 
+ Container tp3-ab-run-b3a7491fbcc5 Created 
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking balanceador (be patient)
-Finished 8880 requests
+Finished 11707 requests
 
 
 Server Software:        nginx/1.28.3
@@ -17,29 +17,29 @@ Document Length:        Variable
 
 Concurrency Level:      1
 Time taken for tests:   20.001 seconds
-Complete requests:      8880
+Complete requests:      11707
 Failed requests:        0
-Total transferred:      2672880 bytes
-HTML transferred:       586080 bytes
-Requests per second:    443.98 [#/sec] (mean)
-Time per request:       2.252 [ms] (mean)
-Time per request:       2.252 [ms] (mean, across all concurrent requests)
-Transfer rate:          130.51 [Kbytes/sec] received
+Total transferred:      3523807 bytes
+HTML transferred:       772662 bytes
+Requests per second:    585.32 [#/sec] (mean)
+Time per request:       1.708 [ms] (mean)
+Time per request:       1.708 [ms] (mean, across all concurrent requests)
+Transfer rate:          172.05 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
 Connect:        0    0   0.0      0       0
-Processing:     1    2   0.8      2      16
-Waiting:        1    2   0.7      2      16
-Total:          2    2   0.8      2      16
+Processing:     1    2   0.3      2      19
+Waiting:        1    2   0.3      2      19
+Total:          1    2   0.3      2      19
 
 Percentage of the requests served within a certain time (ms)
   50%      2
-  66%      3
-  75%      3
-  80%      3
-  90%      3
-  95%      3
-  98%      4
-  99%      4
- 100%     16 (longest request)
+  66%      2
+  75%      2
+  80%      2
+  90%      2
+  95%      2
+  98%      2
+  99%      2
+ 100%     19 (longest request)

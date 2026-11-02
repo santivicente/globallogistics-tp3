@@ -1,12 +1,12 @@
- Container tp3-ab-run-0573ba7dbfb4 Creating 
- Container tp3-ab-run-0573ba7dbfb4 Created 
+ Container tp3-ab-run-c932c407f3b1 Creating 
+ Container tp3-ab-run-c932c407f3b1 Created 
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking balanceador (be patient)
 Completed 200000 requests
-Finished 225149 requests
+Finished 236443 requests
 
 
 Server Software:        nginx/1.28.3
@@ -17,30 +17,30 @@ Document Path:          /nginx-health
 Document Length:        Variable
 
 Concurrency Level:      100
-Time taken for tests:   20.001 seconds
-Complete requests:      225149
+Time taken for tests:   20.000 seconds
+Complete requests:      236443
 Failed requests:        0
-Total transferred:      32650810 bytes
-HTML transferred:       675534 bytes
-Requests per second:    11257.08 [#/sec] (mean)
-Time per request:       8.883 [ms] (mean)
-Time per request:       0.089 [ms] (mean, across all concurrent requests)
-Transfer rate:          1594.23 [Kbytes/sec] received
+Total transferred:      34288730 bytes
+HTML transferred:       709422 bytes
+Requests per second:    11822.09 [#/sec] (mean)
+Time per request:       8.459 [ms] (mean)
+Time per request:       0.085 [ms] (mean, across all concurrent requests)
+Transfer rate:          1674.25 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0    4   0.8      4      12
-Processing:     2    5   0.9      5      14
-Waiting:        0    4   1.1      3      12
-Total:          7    9   0.9      9      18
+Connect:        0    4   0.7      4      15
+Processing:     2    5   0.9      5      16
+Waiting:        0    4   1.0      3      15
+Total:          7    8   0.9      8      22
 
 Percentage of the requests served within a certain time (ms)
-  50%      9
-  66%      9
+  50%      8
+  66%      8
   75%      9
   80%      9
-  90%     10
-  95%     11
-  98%     12
-  99%     13
- 100%     18 (longest request)
+  90%      9
+  95%     10
+  98%     11
+  99%     12
+ 100%     22 (longest request)

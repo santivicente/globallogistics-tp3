@@ -1,0 +1,45 @@
+ Container tp3-ab-run-3f3b85284737 Creating 
+ Container tp3-ab-run-3f3b85284737 Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking api (be patient)
+Finished 13788 requests
+
+
+Server Software:        
+Server Hostname:        api
+Server Port:            3000
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      100
+Time taken for tests:   20.001 seconds
+Complete requests:      13788
+Failed requests:        0
+Total transferred:      3447000 bytes
+HTML transferred:       910008 bytes
+Requests per second:    689.36 [#/sec] (mean)
+Time per request:       145.061 [ms] (mean)
+Time per request:       1.451 [ms] (mean, across all concurrent requests)
+Transfer rate:          168.30 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.3      0       6
+Processing:     8  144  10.2    141     193
+Waiting:        2  144  11.1    141     193
+Total:          8  144  10.1    141     193
+
+Percentage of the requests served within a certain time (ms)
+  50%    141
+  66%    143
+  75%    146
+  80%    148
+  90%    154
+  95%    169
+  98%    175
+  99%    179
+ 100%    193 (longest request)

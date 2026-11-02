@@ -1,0 +1,35 @@
+### PRUEBA 1: se detiene una réplica en plena carga (t=10 s) y vuelve (t=20 s)
+[t=10] docker stop tp3-api-2
+[t=20] docker start tp3-api-2
+Complete requests:      41910
+Failed requests:        0
+Requests per second:    1396.97 [#/sec] (mean)
+  95%     87
+  99%    110
+ 100%    204 (longest request)
+Reparto después de la vuelta:
+      3 3f204650e033
+      3 8c32a5c637c6
+      3 a2f9643419fc
+
+### PRUEBA 2: muere el proceso de una réplica
+antes:  reinicios=0 estado=running
+a 13 s: reinicios=1 estado=running salud=healthy
+
+### PRUEBA 3: se escala a 5 réplicas sin reiniciar NGINX
+NGINX iniciado: 2026-11-01T17:55:04.199202443Z
+      3 3f204650e033
+      3 8c32a5c637c6
+      3 a2f9643419fc
+      3 d7163efc5328
+      3 f58cf2b076d4
+NGINX iniciado: 2026-11-01T17:55:04.199202443Z
+
+De vuelta en 3 réplicas:
+      3 3f204650e033
+      3 8c32a5c637c6
+      3 a2f9643419fc
+tp3-api-1  Up About a minute (healthy)
+tp3-api-2  Up About a minute (healthy)
+tp3-api-3  Up 38 seconds (healthy)
+tp3-balanceador-1  Up About a minute (healthy)

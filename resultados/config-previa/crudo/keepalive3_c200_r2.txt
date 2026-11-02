@@ -1,0 +1,46 @@
+ Container tp3-ab-run-ea871764b5f2 Creating 
+ Container tp3-ab-run-ea871764b5f2 Created 
+This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking balanceador (be patient)
+Finished 102444 requests
+
+
+Server Software:        nginx/1.28.3
+Server Hostname:        balanceador
+Server Port:            80
+
+Document Path:          /
+Document Length:        Variable
+
+Concurrency Level:      200
+Time taken for tests:   20.003 seconds
+Complete requests:      102444
+Failed requests:        0
+Non-2xx responses:      91976
+Total transferred:      33814436 bytes
+HTML transferred:       15143830 bytes
+Requests per second:    5121.40 [#/sec] (mean)
+Time per request:       39.052 [ms] (mean)
+Time per request:       0.195 [ms] (mean, across all concurrent requests)
+Transfer rate:          1650.84 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    6   2.5      7      17
+Processing:     0   33 190.1     10    2018
+Waiting:        0   31 190.3      9    2017
+Total:          0   39 189.6     17    2023
+
+Percentage of the requests served within a certain time (ms)
+  50%     17
+  66%     18
+  75%     18
+  80%     19
+  90%     24
+  95%     56
+  98%     72
+  99%    563
+ 100%   2023 (longest request)

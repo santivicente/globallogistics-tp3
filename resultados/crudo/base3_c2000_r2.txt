@@ -1,12 +1,11 @@
- Container tp3-ab-run-ced4bf821ff8 Creating 
- Container tp3-ab-run-ced4bf821ff8 Created 
+ Container tp3-ab-run-727d054f26c1 Creating 
+ Container tp3-ab-run-727d054f26c1 Created 
 This is ApacheBench, Version 2.3 <$Revision: 1934973 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking balanceador (be patient)
-Completed 200000 requests
-Finished 278409 requests
+Finished 190806 requests
 
 
 Server Software:        nginx/1.28.3
@@ -17,31 +16,31 @@ Document Path:          /
 Document Length:        Variable
 
 Concurrency Level:      2000
-Time taken for tests:   20.062 seconds
-Complete requests:      278409
-Failed requests:        277687
-   (Connect: 0, Receive: 2366, Length: 0, Exceptions: 275321)
-Total transferred:      916545 bytes
-HTML transferred:       200970 bytes
-Requests per second:    13877.47 [#/sec] (mean)
-Time per request:       144.118 [ms] (mean)
-Time per request:       0.072 [ms] (mean, across all concurrent requests)
-Transfer rate:          44.62 [Kbytes/sec] received
+Time taken for tests:   20.012 seconds
+Complete requests:      190806
+Failed requests:        0
+Non-2xx responses:      156233
+Total transferred:      61538911 bytes
+HTML transferred:       28694897 bytes
+Requests per second:    9534.38 [#/sec] (mean)
+Time per request:       209.767 [ms] (mean)
+Time per request:       0.105 [ms] (mean, across all concurrent requests)
+Transfer rate:          3002.97 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0   71  31.3     70    1103
-Processing:    31   72  13.4     70     384
-Waiting:        0    2  15.9      0     325
-Total:        101  143  34.2    140    1266
+Connect:        0   22   6.9     22     118
+Processing:    18  183 325.4     32    1014
+Waiting:        2  175 325.1     26    1004
+Total:         39  205 327.0     52    1038
 
 Percentage of the requests served within a certain time (ms)
-  50%    140
-  66%    141
-  75%    143
-  80%    145
-  90%    152
-  95%    160
-  98%    171
-  99%    184
- 100%   1266 (longest request)
+  50%     52
+  66%     54
+  75%     58
+  80%     66
+  90%    898
+  95%    934
+  98%    969
+  99%    988
+ 100%   1038 (longest request)
