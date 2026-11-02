@@ -223,7 +223,7 @@ figcaption{font-size:8.8pt;color:${C.t2};margin-top:3pt}
 
 <h2 style="margin-top:0">Resumen</h2>
 <p>Desplegamos un balanceador NGINX y tres réplicas de un microservicio con un solo archivo de Docker Compose, y lo sometimos a pruebas de carga con Apache Benchmark. Como vara usamos los objetivos del contrato que definimos en el TP2: p95 ≤ 300 ms, p99 ≤ 800 ms y un máximo de 2000 ms.</p>
-<p>Con 100 clientes simultáneos el sistema cumple sin problemas (p95 de ${n0(b100.p95)} ms). La CPU de las réplicas se satura cerca de los 10 clientes, pero eso solo hace crecer la latencia de forma gradual. El objetivo de p95 se pierde entre 450 y 480 clientes y el de p99, entre 1000 y 1500. Desde los 1500 clientes, el control de admisión rechaza el exceso con 429: con 6000 clientes no falló ninguna petición y siguieron saliendo ${n0(b6000.goodput)} respuestas correctas por segundo.</p>
+<p>Con 100 clientes simultáneos el sistema cumple sin problemas (p95 de ${n0(b100.p95)} ms). La CPU de las réplicas se satura cerca de los 10 clientes, pero eso solo hace crecer la latencia de forma gradual. El objetivo de p95 se pierde entre 450 y 480 clientes y el de p99, entre 1000 y 1500. Por encima de los 1500 clientes, el control de admisión rechaza el exceso con 429: con 6000 clientes no falló ninguna petición y siguieron saliendo ${n0(b6000.goodput)} respuestas correctas por segundo.</p>
 <p>A ese resultado llegamos corrigiendo lo que rompían las pruebas. Las primeras configuraciones que medimos colapsaban: una de ellas fallaba en el 97 % de las peticiones con 1000 clientes. La causa no era la CPU, sino los límites de conexiones y un health check que retiraba réplicas sanas.</p>
 
 <h2>1. Configuración del entorno e IaC</h2>
@@ -301,7 +301,7 @@ ${tablaBarrido}
 </ul>
 ${tablaAntes}
 <p class="nota">Respuestas correctas por segundo y, entre paréntesis, el porcentaje de peticiones con error o rechazadas.</p>
-<figure>${graficoGoodput()}<figcaption>Figura 6. Respuestas correctas por segundo según la configuración. Las configuraciones previas se desploman al llegar a un límite; la final se mantiene.</figcaption></figure>
+<figure>${graficoGoodput()}<figcaption>Figura 6. Respuestas correctas por segundo según la configuración. Las configuraciones previas y la variante con keepalive se desploman al llegar a un límite; la final se mantiene.</figcaption></figure>
 <figure><img src="capturas/c3-previa.png" alt="Reporte de ab con 1000 clientes y advertencias de NGINX"><figcaption>Figura 7. Configuración previa con 1000 clientes: 224.896 peticiones fallidas sobre 232.238. Las 11.600 "req/s" son en su gran mayoría fallos, y el log de NGINX muestra el motivo.</figcaption></figure>
 
 <h3>Un hallazgo no previsto: la cascada del keepalive</h3>
