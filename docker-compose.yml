@@ -4,9 +4,12 @@ name: tp3
 services:
   api:
     build: ./api
-    # 1.1: backlog ampliado. Cambiar la versión obliga a reconstruir; con la misma,
-    # "up -d" reutilizaría una imagen vieja que haya quedado en la máquina.
-    image: globallogistics/api-envios:1.1
+    # 1.2: hilo de salud (1.1: backlog ampliado). Cambiar la versión obliga a reconstruir;
+    # con la misma, "up -d" reutilizaría una imagen vieja que haya quedado en la máquina.
+    image: globallogistics/api-envios:1.2
+    # El hilo de salud reinicia la réplica si se cuelga, y el kernel no deja que el
+    # PID 1 se mate a sí mismo: con init, Node deja de serlo.
+    init: true
     environment:
       PORT: "3000"
       CPU_WORK_ITERATIONS: "${CPU_WORK_ITERATIONS:-3000}"
@@ -21,8 +24,10 @@ services:
           cpus: "1.0"
           memory: 256M
     restart: unless-stopped
+    # Consulta el hilo de salud (api/salud.js) y no la API: así no queda detrás de la cola
+    # de peticiones y no marca como caída a una réplica que solo está saturada.
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3001/health"]
       interval: 5s
       timeout: 3s
       retries: 3
@@ -51,7 +56,7 @@ services:
       resources:
         limits:
           cpus: "1.0"
-          memory: 256M             # con 6000 clientes NGINX ya usa ~140 MB
+          memory: 256M             # con 20.000 clientes (el máximo de ab) NGINX usa ~165 MB
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/nginx-health"]

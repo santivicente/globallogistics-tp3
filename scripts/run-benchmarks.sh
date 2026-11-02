@@ -29,7 +29,8 @@ medir() { # $1=etiqueta  $2=concurrencia  $3=URL (opcional)
   done
 }
 
-# 1. Base: 3 réplicas. Barrido de concurrencia, hasta 6000 clientes.
+# 1. Base: 3 réplicas. Barrido de concurrencia, hasta muy por encima del control de
+# admisión (1500 peticiones en curso).
 EXTRA=""; levantar 3 ""
 for c in 1 10 50 100 200 300 400 450 480 500 600 800 1000 1500 2000 3000 4000 6000; do medir base3 $c; done
 
