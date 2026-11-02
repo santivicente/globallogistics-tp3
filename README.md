@@ -44,8 +44,11 @@ docker-compose run --rm -T ab -l -r -t 20 -n 2000000 -c 100 http://balanceador/
 # Concurrencia extrema: agota el pool de conexiones de NGINX
 docker-compose run --rm -T ab -l -r -t 20 -n 2000000 -c 1000 http://balanceador/
 
+# Carga sostenida: descarta que algo se agote con el tiempo
+docker-compose run --rm -T ab -l -r -t 120 -n 5000000 -c 100 http://balanceador/
+
 # Lo que dejó NGINX en el log
-docker logs tp3-balanceador-1 2>&1 | grep -E "worker_connections|no live upstreams|timed out"
+docker logs tp3-balanceador-1 2>&1 | grep -E "worker_connections|no live upstreams|timed out|Address not available"
 ```
 
 | Flag | Significado |

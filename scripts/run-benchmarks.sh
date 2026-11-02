@@ -33,6 +33,10 @@ medir() { # $1=etiqueta  $2=concurrencia  $3=URL (opcional)
 EXTRA=""; levantar 3 ""
 for c in 1 10 50 100 200 300 400 450 480 500 600 800 1000 2000; do medir base3 $c; done
 
+# Carga sostenida: con corridas de 20 s no se ve lo que se agota con el tiempo (con la
+# configuración original, a ~7700 req/s los puertos hacia las réplicas se acababan a los ~45 s).
+REPS=1 DUR=120 medir sostenida3 100
+
 # Techo del balanceador: /health casi no usa las réplicas; /nginx-health ni las toca.
 medir salud3 100 http://balanceador/health; medir nginxpuro 100 http://balanceador/nginx-health
 

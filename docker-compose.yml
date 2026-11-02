@@ -33,6 +33,13 @@ services:
     depends_on:
       api:
         condition: service_healthy
+    sysctls:
+      # Sin keepalive, NGINX abre una conexión por petición hacia las réplicas y cada una
+      # queda 60 s en TIME_WAIT. Con el valor por defecto (2: solo loopback), los 28.232
+      # puertos efímeros por réplica se agotaban tras ~45 s de carga sostenida a ~7700 req/s
+      # y NGINX retiraba a las tres réplicas sanas. Con 1, el kernel reutiliza un puerto en
+      # TIME_WAIT cuando es seguro hacerlo (usa los timestamps de TCP).
+      net.ipv4.tcp_tw_reuse: 1
     deploy:
       resources:
         limits:
