@@ -1,7 +1,0 @@
-# Variante para comparar: balanceador con un pool de conexiones más grande.
-# Uso: docker-compose -f docker-compose.yml -f docker-compose.tuned.yml up -d
-services:
-  balanceador:
-    command: >
-      sh -c "sed 's/worker_connections 1024/worker_connections 8192/' /etc/nginx/nginx.conf > /tmp/nginx.conf
-      && exec nginx -c /tmp/nginx.conf -g 'daemon off;'"

@@ -44,11 +44,14 @@ services:
       # y NGINX retiraba a las tres réplicas sanas. Con 1, el kernel reutiliza un puerto en
       # TIME_WAIT cuando es seguro hacerlo (usa los timestamps de TCP).
       net.ipv4.tcp_tw_reuse: 1
+      net.core.somaxconn: 4096     # techo del backlog de "listen" en nginx.conf
+    ulimits:
+      nofile: 65536                # alcanza para los 32.768 worker_connections
     deploy:
       resources:
         limits:
           cpus: "1.0"
-          memory: 128M
+          memory: 256M             # con 6000 clientes NGINX ya usa ~140 MB
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/nginx-health"]

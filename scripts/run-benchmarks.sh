@@ -29,9 +29,9 @@ medir() { # $1=etiqueta  $2=concurrencia  $3=URL (opcional)
   done
 }
 
-# 1. Base: 3 réplicas, pool por defecto. Barrido de concurrencia.
+# 1. Base: 3 réplicas. Barrido de concurrencia, hasta 6000 clientes.
 EXTRA=""; levantar 3 ""
-for c in 1 10 50 100 200 300 400 450 480 500 600 800 1000 2000; do medir base3 $c; done
+for c in 1 10 50 100 200 300 400 450 480 500 600 800 1000 1500 2000 3000 4000 6000; do medir base3 $c; done
 
 # Carga sostenida: con corridas de 20 s no se ve lo que se agota con el tiempo (con la
 # configuración original, a ~7700 req/s los puertos hacia las réplicas se acababan a los ~45 s).
@@ -50,11 +50,7 @@ for n in 1 2 4 5; do
   for c in 100 200; do medir "rep$n" $c; done
 done
 
-# 3. Balanceador con pool ampliado, para ver qué se rompe después.
-EXTRA="-f docker-compose.tuned.yml"; levantar 3 "$EXTRA"
-for c in 500 1000 1500 2000 3000 4000 6000; do medir tuned3 $c; done
-
-# 4. La configuración inicial con keepalive, para documentar el fallo en cascada.
+# 3. La configuración inicial con keepalive, para documentar el fallo en cascada.
 EXTRA="-f docker-compose.keepalive.yml"; levantar 3 "$EXTRA"
 for c in 100 150 200; do medir keepalive3 $c; done
 

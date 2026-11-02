@@ -41,7 +41,7 @@ el campo `instancia` va rotando entre tres IDs.
 # Concurrencia moderada
 docker-compose run --rm -T ab -l -r -t 20 -n 2000000 -c 100 http://balanceador/
 
-# Concurrencia extrema: agota el pool de conexiones de NGINX
+# Concurrencia extrema: satura la CPU de las réplicas y las peticiones hacen cola
 docker-compose run --rm -T ab -l -r -t 20 -n 2000000 -c 1000 http://balanceador/
 
 # Carga sostenida: descarta que algo se agote con el tiempo
@@ -61,12 +61,9 @@ docker logs tp3-balanceador-1 2>&1 | grep -E "worker_connections|no live upstrea
 
 **Cuidado al leer el reporte:** `ab` cuenta los errores como peticiones completas, y como un error es instantáneo, las req/s suben y los percentiles bajan cuando el sistema está fallando. Hay que mirar siempre `Failed requests` y `Non-2xx responses`.
 
-### Variantes de configuración
+### Variante de configuración
 
 ```bash
-# Pool de NGINX ampliado a 8192 conexiones
-docker-compose -f docker-compose.yml -f docker-compose.tuned.yml up -d
-
 # Keepalive hacia las réplicas: reproduce el fallo en cascada (probar con -c 200)
 docker-compose -f docker-compose.yml -f docker-compose.keepalive.yml up -d
 
@@ -98,7 +95,7 @@ docker-compose down
 | Ruta | Contenido |
 |---|---|
 | `docker-compose.yml` | Manifiesto principal: 1 balanceador y 3 réplicas |
-| `docker-compose.tuned.yml`, `docker-compose.keepalive.yml` | Variantes usadas para comparar |
+| `docker-compose.keepalive.yml` | Variante con keepalive, para reproducir el fallo en cascada |
 | `api/` | Microservicio y su Dockerfile |
 | `nginx/nginx.conf` | Balanceo y health checks |
 | `scripts/` | Automatización de las pruebas |
