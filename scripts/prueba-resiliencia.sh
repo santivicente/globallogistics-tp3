@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tres pruebas de resiliencia sobre el entorno ya levantado (tarda alrededor de 1,5 minutos).
+# Cuatro pruebas de resiliencia sobre el entorno ya levantado (tarda alrededor de 2 minutos).
 # Uso: bash scripts/prueba-resiliencia.sh
 set -u
 cd "$(dirname "$0")/.."
@@ -28,4 +28,26 @@ docker inspect -f 'NGINX iniciado: {{.State.StartedAt}}' tp3-balanceador-1
 
 docker-compose up -d --wait --scale api=3 --no-recreate >/dev/null 2>&1; sleep 8
 echo; echo "De vuelta en 3 réplicas:"; ids 9
+
+echo; echo "### PRUEBA 4: se cuelga el event loop de una réplica en plena carga (t=5 s)"
+# Con el inspector de Node se le hace ejecutar un bucle infinito: el proceso sigue vivo y
+# acepta conexiones, pero ya no responde. El hilo de salud tiene que reiniciarla solo.
+docker inspect -f 'antes:   reinicios={{.RestartCount}}' tp3-api-1
+docker-compose run --rm -T ab -l -r -t 30 -n 500000 -c 50 http://balanceador/ > /tmp/resiliencia-ab.txt 2>&1 &
+sleep 5; echo "[t=5] se traba el event loop de tp3-api-1"
+docker exec tp3-api-1 sh -c 'kill -USR1 $(pidof node)'; sleep 1
+docker exec tp3-api-1 node -e '
+fetch("http://127.0.0.1:9229/json/list").then((r) => r.json()).then(([t]) => {
+  const ws = new WebSocket(t.webSocketDebuggerUrl);
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ id: 1, method: "Runtime.evaluate", params: { expression: "for (;;) {}" } }));
+    setTimeout(() => process.exit(0), 300);
+  };
+});'
+wait
+grep -E 'Complete requests|Failed requests|Non-2xx|Requests per second| 95%| 99%|100%' /tmp/resiliencia-ab.txt
+docker logs tp3-api-1 2>&1 | grep 'event loop detenido' | tail -1
+docker inspect -f 'después: reinicios={{.RestartCount}} salud={{.State.Health.Status}}' tp3-api-1
+
+echo
 docker-compose ps --format '{{.Name}}  {{.Status}}'
